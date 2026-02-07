@@ -135,6 +135,7 @@ function MapView({
   userLocation = null,
   shelters = [],
   onMapClick = null,
+  currentUserId = null,
 }) {
   // Default center: Leeds, UK
   const defaultCenter = [53.8008, -1.5491];
@@ -221,6 +222,9 @@ function MapView({
           can_help: '🤝 Can Help',
         };
 
+        // Check if this incident belongs to the current user
+        const isOwnIncident = currentUserId && incident.userId === currentUserId;
+
         return (
           <Marker
             key={incident._id || incident.id}
@@ -230,7 +234,10 @@ function MapView({
             <Popup>
               <div className="incident-popup">
                 <div className="popup-header">
-                  <strong>{typeLabels[incident.type] || incident.type}</strong>
+                  <strong>
+                    {typeLabels[incident.type] || incident.type}
+                    {isOwnIncident && <span className="own-pin-badge"> (You)</span>}
+                  </strong>
                   <span className="popup-time">{formatRelativeTime(incident.createdAt)}</span>
                 </div>
                 <div className="popup-category">{incident.category}</div>

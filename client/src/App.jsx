@@ -7,6 +7,10 @@ import { useIncidents } from './hooks/useIncidents';
 import { useUserLocation } from './hooks/useUserLocation';
 import { createIncident } from './api/incidentsApi';
 import { getSafeRoute } from './api/routesApi';
+import { getOrCreateUserId } from './utils/userId';
+
+// Get or create anonymous user ID for this device
+const userId = getOrCreateUserId();
 
 /**
  * Haven - Main App Component
@@ -113,6 +117,7 @@ function App() {
         chosenRouteId={chosenRouteId}
         userLocation={userLocation}
         onMapClick={handleMapClick}
+        currentUserId={userId}
       />
 
       {/* Floating action buttons */}
@@ -169,6 +174,7 @@ function App() {
         onSubmit={handleReportSubmit}
         currentLocation={userLocation}
         clickedLocation={clickedLocation}
+        userId={userId}
       />
 
       {/* Incident List (debug/overview) */}

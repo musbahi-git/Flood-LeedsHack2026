@@ -11,7 +11,7 @@ const router = express.Router();
  */
 router.post('/', async (req, res) => {
   try {
-    const { type, category, description, lat, lon } = req.body;
+    const { type, category, description, lat, lon, userId } = req.body;
 
     // Basic validation
     if (!type) {
@@ -26,6 +26,7 @@ router.post('/', async (req, res) => {
       type,
       category: category || 'other',
       description: description || '',
+      userId: userId || null,
       location: {
         type: 'Point',
         coordinates: [parseFloat(lon), parseFloat(lat)], // GeoJSON uses [lon, lat]

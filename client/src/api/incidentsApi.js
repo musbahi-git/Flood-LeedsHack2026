@@ -20,6 +20,7 @@ const MOCK_INCIDENTS = [
     description: 'Flooding on Main Street near the park. Water is about knee-high.',
     lat: 53.8008,
     lon: -1.5491,
+    userId: 'other-user-1',
     createdAt: new Date(Date.now() - 10 * 60000).toISOString(), // 10 mins ago
   },
   {
@@ -29,6 +30,7 @@ const MOCK_INCIDENTS = [
     description: 'Elderly person needs help getting to shelter. Unable to walk far.',
     lat: 53.8025,
     lon: -1.5450,
+    userId: 'other-user-2',
     createdAt: new Date(Date.now() - 25 * 60000).toISOString(), // 25 mins ago
   },
   {
@@ -38,6 +40,7 @@ const MOCK_INCIDENTS = [
     description: 'I have spare bottled water and blankets. Can deliver within 2km.',
     lat: 53.7980,
     lon: -1.5520,
+    userId: 'other-user-1',
     createdAt: new Date(Date.now() - 45 * 60000).toISOString(), // 45 mins ago
   },
   {
@@ -47,6 +50,7 @@ const MOCK_INCIDENTS = [
     description: 'Power lines down on Oak Avenue. Area blocked off.',
     lat: 53.8050,
     lon: -1.5400,
+    userId: 'other-user-3',
     createdAt: new Date(Date.now() - 2 * 60 * 60000).toISOString(), // 2 hours ago
   },
   {
@@ -56,6 +60,7 @@ const MOCK_INCIDENTS = [
     description: 'Car stuck in flood water on Bridge Road. Need tow or lift.',
     lat: 53.7960,
     lon: -1.5550,
+    userId: 'other-user-2',
     createdAt: new Date(Date.now() - 5 * 60000).toISOString(), // 5 mins ago
   },
 ];

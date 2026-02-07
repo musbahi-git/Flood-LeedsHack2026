@@ -7,11 +7,12 @@ import React, { useState, useEffect } from 'react';
  * Props:
  * - isOpen: boolean - whether modal is visible
  * - onClose(): close the modal
- * - onSubmit(formData): called with { type, category, description, lat, lon }
+ * - onSubmit(formData): called with { type, category, description, lat, lon, userId }
  * - currentLocation: from useUserLocation (optional)
  * - clickedLocation: location from map click (optional)
+ * - userId: anonymous user ID for tracking user's own pins
  */
-function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocation }) {
+function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocation, userId }) {
   const [formData, setFormData] = useState({
     type: 'incident',
     category: 'flood',
@@ -126,6 +127,7 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
         description: formData.description.trim(),
         lat: parseFloat(formData.lat),
         lon: parseFloat(formData.lon),
+        userId: userId,
       });
       // Reset form on success
       setFormData({
