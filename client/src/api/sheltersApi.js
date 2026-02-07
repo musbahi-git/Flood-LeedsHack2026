@@ -4,7 +4,7 @@ import axios from 'axios';
 // MOCK/REAL API SWITCH
 // Set to false when backend is ready
 // ============================================
-const USE_MOCK_API = true;
+const USE_MOCK_API = false;
 
 // API base URL - uses Vite proxy in development
 const API_BASE = import.meta.env.VITE_API_URL || '/api';

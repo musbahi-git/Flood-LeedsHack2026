@@ -40,27 +40,31 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
     }
   }, [currentLocation, clickedLocation]);
 
-  // Reset form when modal opens
+// Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       setErrors({});
       setSubmitError(null);
-      // Pre-fill location if available
+      // Reset and pre-fill location
       if (clickedLocation) {
-        setFormData(prev => ({
-          ...prev,
+        setFormData({
+          type: 'incident',
+          category: 'flood',
+          description: '',
           lat: clickedLocation.lat.toFixed(6),
           lon: clickedLocation.lon.toFixed(6),
-        }));
+        });
       } else if (currentLocation) {
-        setFormData(prev => ({
-          ...prev,
+        setFormData({
+          type: 'incident',
+          category: 'flood',
+          description: '',
           lat: currentLocation.lat.toFixed(6),
           lon: currentLocation.lon.toFixed(6),
-        }));
+        });
       }
     }
-  }, [isOpen]);
+  }, [isOpen, clickedLocation, currentLocation]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
