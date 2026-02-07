@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import MapView from './components/MapView';
 import ReportModal from './components/ReportModal';
 import SafeRoutePanel from './components/SafeRoutePanel';
@@ -26,6 +26,10 @@ function App() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [showIncidentList, setShowIncidentList] = useState(false);
 
+  // PWA install prompt state
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [showInstallBanner, setShowInstallBanner] = useState(false);
+
   // Route state
   const [routes, setRoutes] = useState([]);
   const [chosenRouteId, setChosenRouteId] = useState(null);
@@ -40,6 +44,40 @@ function App() {
   const handleMapClick = useCallback((latlng) => {
     setClickedLocation({ lat: latlng.lat, lon: latlng.lng });
   }, []);
+
+  // PWA install prompt handling
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Store the event so it can be triggered later
+      setDeferredPrompt(e);
+      // Show custom install banner
+      setShowInstallBanner(true);
+    };
+
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    };
+  }, []);
+
+  // Handle PWA install
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+
+    // Show the install prompt
+    deferredPrompt.prompt();
+
+    // Wait for the user's response
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('[PWA] Install prompt outcome:', outcome);
+
+    // Clear the deferred prompt
+    setDeferredPrompt(null);
+    setShowInstallBanner(false);
+  };
 
   // Handle report submission
   const handleReportSubmit = async (formData) => {
@@ -191,6 +229,24 @@ function App() {
       {userLocation && (
         <div className="location-indicator">
           📍 Location active
+        </div>
+      )}
+
+      {/* PWA Install Banner */}
+      {showInstallBanner && (
+        <div className="install-banner">
+          <span className="install-text">📲 Install Haven for quick access</span>
+          <div className="install-actions">
+            <button className="btn btn-small btn-primary" onClick={handleInstallClick}>
+              Install
+            </button>
+            <button 
+              className="btn btn-small btn-ghost" 
+              onClick={() => setShowInstallBanner(false)}
+            >
+              Later
+            </button>
+          </div>
         </div>
       )}
     </div>
