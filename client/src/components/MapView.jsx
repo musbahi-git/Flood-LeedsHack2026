@@ -1,9 +1,8 @@
-import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
+import React, { useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 
 // Fix for default marker icons in React-Leaflet
-// TODO: Person B - Add custom icons for different incident types
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
@@ -11,84 +10,261 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
 });
 
-// Custom icons for different incident types
-// TODO: Person B - Create proper custom marker icons
-const createIcon = (color) => {
+// Custom colored marker icons for different incident types
+const createColoredIcon = (color, emoji = '📍') => {
   return L.divIcon({
     className: 'custom-marker',
-    html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3);"></div>`,
-    iconSize: [24, 24],
-    iconAnchor: [12, 12],
+    html: `
+      <div class="marker-pin" style="background-color: ${color};">
+        <span class="marker-emoji">${emoji}</span>
+      </div>
+      <div class="marker-shadow"></div>
+    `,
+    iconSize: [30, 42],
+    iconAnchor: [15, 42],
+    popupAnchor: [0, -36],
   });
 };
 
+// User location icon
+const userLocationIcon = L.divIcon({
+  className: 'user-location-marker',
+  html: `
+    <div class="user-location-dot">
+      <div class="user-location-pulse"></div>
+    </div>
+  `,
+  iconSize: [20, 20],
+  iconAnchor: [10, 10],
+});
+
+// Incident type icons with colors
 const incidentIcons = {
-  incident: createIcon('#ef4444'), // red
-  need_help: createIcon('#f97316'), // orange
-  can_help: createIcon('#22c55e'), // green
+  incident: createColoredIcon('#ef4444', '🚨'),    // red - incident
+  need_help: createColoredIcon('#f97316', '🆘'),   // orange - need help
+  can_help: createColoredIcon('#22c55e', '🤝'),    // green - can help
 };
+
+// Shelter icon
+const shelterIcon = createColoredIcon('#3b82f6', '🏠');
+
+/**
+ * Component to handle map clicks
+ */
+function MapClickHandler({ onMapClick }) {
+  useMapEvents({
+    click: (e) => {
+      if (onMapClick) {
+        onMapClick(e.latlng);
+      }
+    },
+  });
+  return null;
+}
+
+/**
+ * Component to center map on user location
+ */
+function LocationMarker({ location }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (location) {
+      map.flyTo([location.lat, location.lon], map.getZoom(), {
+        duration: 1,
+      });
+    }
+  }, [location, map]);
+
+  if (!location) return null;
+
+  return (
+    <>
+      <Marker position={[location.lat, location.lon]} icon={userLocationIcon}>
+        <Popup>
+          <div className="location-popup">
+            <strong>📍 Your Location</strong>
+            <p>{location.lat.toFixed(5)}, {location.lon.toFixed(5)}</p>
+          </div>
+        </Popup>
+      </Marker>
+      {/* Accuracy circle */}
+      {location.accuracy && (
+        <Circle
+          center={[location.lat, location.lon]}
+          radius={location.accuracy}
+          pathOptions={{
+            color: '#3b82f6',
+            fillColor: '#3b82f6',
+            fillOpacity: 0.1,
+            weight: 1,
+          }}
+        />
+      )}
+    </>
+  );
+}
+
+/**
+ * Format relative time
+ */
+function formatRelativeTime(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}d ago`;
+}
 
 /**
  * MapView Component
- * Displays the interactive map with incidents and routes.
- * 
- * TODO: Person B - Enhance with:
- * - Shelter markers
- * - Route polylines with danger score coloring
- * - Click-to-report functionality
- * - Current location marker
+ * Displays the interactive map with incidents, routes, and user location.
  */
-function MapView({ incidents = [], selectedRoute = null, shelters = [] }) {
+function MapView({ 
+  incidents = [], 
+  routes = [], 
+  chosenRouteId = null,
+  userLocation = null,
+  shelters = [],
+  onMapClick = null,
+}) {
   // Default center: Leeds, UK
   const defaultCenter = [53.8008, -1.5491];
   const defaultZoom = 13;
+
+  // Convert route coordinates to Leaflet format
+  const formatRouteCoords = (coords) => {
+    if (!coords || !Array.isArray(coords)) return [];
+    return coords.map(coord => {
+      // Handle both array format [lon, lat] and object format {lat, lon}
+      if (Array.isArray(coord)) {
+        return [coord[1], coord[0]]; // [lat, lon]
+      }
+      return [coord.lat, coord.lon];
+    });
+  };
 
   return (
     <MapContainer
       center={defaultCenter}
       zoom={defaultZoom}
       className="map-container"
-      style={{ height: '100%', width: '100%' }}
+      zoomControl={false}
     >
       {/* Base tile layer - OpenStreetMap */}
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
+      {/* Map click handler */}
+      {onMapClick && <MapClickHandler onMapClick={onMapClick} />}
+
+      {/* User location marker */}
+      <LocationMarker location={userLocation} />
+
+      {/* Render all routes (non-chosen in grey) */}
+      {routes.map((route) => {
+        const isChosen = route.id === chosenRouteId;
+        const positions = formatRouteCoords(route.coordinates);
+        
+        if (positions.length === 0) return null;
+
+        return (
+          <Polyline
+            key={`route-${route.id}`}
+            positions={positions}
+            pathOptions={{
+              color: isChosen ? '#22c55e' : '#9ca3af',
+              weight: isChosen ? 6 : 3,
+              opacity: isChosen ? 0.9 : 0.5,
+              dashArray: isChosen ? null : '10, 10',
+            }}
+          >
+            <Popup>
+              <div className="route-popup">
+                <strong>{isChosen ? '✅ Recommended Route' : 'Alternative Route'}</strong>
+                {route.dangerScore !== undefined && (
+                  <p>Danger Score: {(route.dangerScore * 100).toFixed(0)}%</p>
+                )}
+              </div>
+            </Popup>
+          </Polyline>
+        );
+      })}
+
       {/* Render incident markers */}
-      {incidents.map((incident) => (
-        <Marker
-          key={incident._id}
-          position={[
-            incident.location.coordinates[1], // lat
-            incident.location.coordinates[0], // lon
-          ]}
-          icon={incidentIcons[incident.type] || incidentIcons.incident}
-        >
-          <Popup>
-            <div className="incident-popup">
-              <strong>{incident.type.replace('_', ' ').toUpperCase()}</strong>
-              <p><em>{incident.category}</em></p>
-              <p>{incident.description || 'No description'}</p>
-              <small>{new Date(incident.createdAt).toLocaleString()}</small>
-            </div>
-          </Popup>
-        </Marker>
-      ))}
+      {incidents.map((incident) => {
+        // Handle different location formats
+        let lat, lon;
+        if (incident.location?.coordinates) {
+          [lon, lat] = incident.location.coordinates;
+        } else if (incident.lat && incident.lon) {
+          lat = incident.lat;
+          lon = incident.lon;
+        } else {
+          return null;
+        }
 
-      {/* Render selected route */}
-      {selectedRoute && selectedRoute.coordinates && (
-        <Polyline
-          positions={selectedRoute.coordinates.map(coord => [coord[1], coord[0]])}
-          color="#3b82f6"
-          weight={5}
-          opacity={0.8}
-        />
-      )}
+        const icon = incidentIcons[incident.type] || incidentIcons.incident;
+        const typeLabels = {
+          incident: '🚨 Incident',
+          need_help: '🆘 Needs Help',
+          can_help: '🤝 Can Help',
+        };
 
-      {/* TODO: Person B - Add shelter markers */}
-      {/* TODO: Person B - Add current location marker */}
+        return (
+          <Marker
+            key={incident._id || incident.id}
+            position={[lat, lon]}
+            icon={icon}
+          >
+            <Popup>
+              <div className="incident-popup">
+                <div className="popup-header">
+                  <strong>{typeLabels[incident.type] || incident.type}</strong>
+                  <span className="popup-time">{formatRelativeTime(incident.createdAt)}</span>
+                </div>
+                <div className="popup-category">{incident.category}</div>
+                <p className="popup-description">{incident.description || 'No description provided'}</p>
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
+
+      {/* Render shelter markers */}
+      {shelters.map((shelter) => {
+        let lat, lon;
+        if (shelter.location?.coordinates) {
+          [lon, lat] = shelter.location.coordinates;
+        } else {
+          return null;
+        }
+
+        return (
+          <Marker
+            key={shelter._id || shelter.id}
+            position={[lat, lon]}
+            icon={shelterIcon}
+          >
+            <Popup>
+              <div className="shelter-popup">
+                <strong>🏠 {shelter.name}</strong>
+                <p>Safe shelter location</p>
+              </div>
+            </Popup>
+          </Marker>
+        );
+      })}
     </MapContainer>
   );
 }

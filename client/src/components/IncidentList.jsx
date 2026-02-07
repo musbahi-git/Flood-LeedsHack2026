@@ -1,44 +1,40 @@
 import React from 'react';
 
 /**
- * IncidentList Component
- * Debug/admin list of all incidents.
- * 
- * TODO: Person B - Enhance with:
- * - Filtering and sorting
- * - Click to zoom on map
- * - Delete/edit functionality
+ * Format relative time from date string
  */
-function IncidentList({ incidents = [], loading = false, error = null }) {
-  if (loading) {
-    return (
-      <div className="incident-list">
-        <p>Loading incidents...</p>
-      </div>
-    );
-  }
+function formatRelativeTime(dateString) {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffMs = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  
+  if (diffMins < 1) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  
+  const diffHours = Math.floor(diffMins / 60);
+  if (diffHours < 24) return `${diffHours}h ago`;
+  
+  const diffDays = Math.floor(diffHours / 24);
+  return `${diffDays}d ago`;
+}
 
-  if (error) {
-    return (
-      <div className="incident-list">
-        <p className="error">Error loading incidents: {error}</p>
-      </div>
-    );
-  }
-
-  if (incidents.length === 0) {
-    return (
-      <div className="incident-list">
-        <p>No incidents reported yet.</p>
-      </div>
-    );
-  }
-
-  // Type icons
-  const typeIcons = {
-    incident: '🚨',
-    need_help: '🆘',
-    can_help: '🤝',
+/**
+ * IncidentList Component
+ * Sidebar/panel listing all incidents for debugging and overview.
+ * 
+ * Props:
+ * - incidents: array of incident objects
+ * - loading: boolean
+ * - error: string or null
+ * - onClose: function to close the panel
+ */
+function IncidentList({ incidents = [], loading = false, error = null, onClose }) {
+  // Type icons and labels
+  const typeConfig = {
+    incident: { icon: '🚨', label: 'Incident', color: '#ef4444' },
+    need_help: { icon: '🆘', label: 'Needs Help', color: '#f97316' },
+    can_help: { icon: '🤝', label: 'Can Help', color: '#22c55e' },
   };
 
   // Category icons
@@ -46,32 +42,86 @@ function IncidentList({ incidents = [], loading = false, error = null }) {
     flood: '🌊',
     power: '⚡',
     travel: '🚗',
+    medical: '🏥',
+    supplies: '📦',
     other: '📋',
   };
 
   return (
-    <div className="incident-list">
-      <h3>Recent Incidents ({incidents.length})</h3>
-      <ul>
-        {incidents.map((incident) => (
-          <li key={incident._id} className="incident-item">
-            <span className="incident-icon">
-              {typeIcons[incident.type] || '📍'}
-            </span>
-            <div className="incident-details">
-              <strong>
-                {incident.type.replace('_', ' ')}
-                {' - '}
-                {categoryIcons[incident.category] || ''} {incident.category}
-              </strong>
-              <p>{incident.description || 'No description'}</p>
-              <small>
-                {new Date(incident.createdAt).toLocaleString()}
-              </small>
-            </div>
-          </li>
-        ))}
-      </ul>
+    <div className="incident-list-panel">
+      <div className="panel-header">
+        <h3>📋 Incidents ({incidents.length})</h3>
+        <button className="panel-close" onClick={onClose} aria-label="Close">×</button>
+      </div>
+
+      <div className="panel-content">
+        {/* Loading state */}
+        {loading && (
+          <div className="list-loading">
+            <div className="loading-spinner"></div>
+            <p>Loading incidents...</p>
+          </div>
+        )}
+
+        {/* Error state */}
+        {error && !loading && (
+          <div className="list-error">
+            <span>⚠️</span>
+            <p>{error}</p>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!loading && !error && incidents.length === 0 && (
+          <div className="list-empty">
+            <span className="empty-icon">📍</span>
+            <p>No incidents reported yet</p>
+            <span className="empty-hint">Be the first to report!</span>
+          </div>
+        )}
+
+        {/* Incident list */}
+        {!loading && incidents.length > 0 && (
+          <ul className="incident-list">
+            {incidents.map((incident) => {
+              const config = typeConfig[incident.type] || typeConfig.incident;
+              const categoryIcon = categoryIcons[incident.category] || '📋';
+
+              return (
+                <li key={incident._id || incident.id} className="incident-item">
+                  <div 
+                    className="incident-type-badge"
+                    style={{ backgroundColor: config.color }}
+                  >
+                    {config.icon}
+                  </div>
+                  
+                  <div className="incident-details">
+                    <div className="incident-header">
+                      <span className="incident-type">{config.label}</span>
+                      <span className="incident-time">
+                        {formatRelativeTime(incident.createdAt)}
+                      </span>
+                    </div>
+                    
+                    <div className="incident-category">
+                      {categoryIcon} {incident.category}
+                    </div>
+                    
+                    {incident.description && (
+                      <p className="incident-description">
+                        {incident.description.length > 80
+                          ? `${incident.description.substring(0, 80)}...`
+                          : incident.description}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }

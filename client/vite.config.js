@@ -6,12 +6,20 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    host: true, // Allow external access (useful for mobile testing)
     proxy: {
       // Proxy API requests to backend during development
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
+        secure: false,
       },
     },
   },
+  build: {
+    outDir: 'dist',
+    sourcemap: true,
+  },
+  // Environment variable prefix
+  envPrefix: 'VITE_',
 });
