@@ -1,4 +1,5 @@
 const express = require('express');
+const Shelter = require('../models/Shelter');
 const { getCandidateRoutes } = require('../services/directionsService');
 const { scoreRoutes } = require('../services/scoringService');
 const { chooseRouteWithGemini } = require('../services/geminiService');
@@ -6,52 +7,57 @@ const { chooseRouteWithGemini } = require('../services/geminiService');
 const router = express.Router();
 
 /**
+ * Find nearest shelter using geo query
+ */
+async function findNearestShelter(origin) {
+  return Shelter.findOne({
+    location: {
+      $near: {
+        $geometry: {
+          type: 'Point',
+          coordinates: [origin.lon, origin.lat],
+        },
+      },
+    },
+  });
+}
+
+/**
  * POST /api/routes/safe
- * Get AI-assisted safe route to a destination.
- * 
- * Body: {
- *   origin: { lat, lon },
- *   destination: { lat, lon }
- * }
- * 
- * Returns: {
- *   routes: [{ id, coordinates, dangerScore }],
- *   chosenRouteId: number,
- *   explanation: string
- * }
- * 
- * TODO: Person C - Implement full logic with real Google Directions, 
- *       flood risk scoring, and Gemini route selection.
  */
 router.post('/', async (req, res) => {
   try {
     const { origin, destination } = req.body;
 
-    // Basic validation
-    if (!origin || !origin.lat || !origin.lon) {
-      return res.status(400).json({ error: 'origin with lat and lon is required' });
-    }
-    if (!destination || !destination.lat || !destination.lon) {
-      return res.status(400).json({ error: 'destination with lat and lon is required' });
+    if (!origin?.lat || !origin?.lon) {
+      return res.status(400).json({ error: 'origin required' });
     }
 
-    // Step 1: Get candidate routes from Google Directions (stubbed)
-    const routes = await getCandidateRoutes(origin, destination);
+    const shelter = destination
+      ? destination
+      : await findNearestShelter(origin);
 
-    // Step 2: Score routes based on flood risk and incidents (stubbed)
-    const scoredRoutes = scoreRoutes(routes, []);
+    if (!shelter) {
+      return res.status(404).json({ error: 'No shelter found' });
+    }
 
-    // Step 3: Use Gemini to choose the safest route (stubbed)
-    const { chosenRouteId, explanation } = await chooseRouteWithGemini(scoredRoutes);
+    const routes = await getCandidateRoutes(origin, {
+      lat: shelter.location.coordinates[1],
+      lon: shelter.location.coordinates[0],
+    });
+
+    const scoredRoutes = await scoreRoutes(routes);
+    const { chosenRouteId, explanation } =
+      await chooseRouteWithGemini(scoredRoutes);
 
     res.json({
       routes: scoredRoutes,
       chosenRouteId,
       explanation,
     });
-  } catch (error) {
-    console.error('Error calculating safe route:', error);
-    res.status(500).json({ error: 'Failed to calculate safe route' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to calculate route' });
   }
 });
 
