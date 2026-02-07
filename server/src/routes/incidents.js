@@ -22,15 +22,16 @@ router.post('/', async (req, res) => {
     }
 
     // Create incident with GeoJSON location
+
+
     const incident = new Incident({
       type,
       category: category || 'other',
       description: description || '',
-      userId: userId || null,
       location: {
         type: 'Point',
-        coordinates: [parseFloat(lon), parseFloat(lat)], // GeoJSON uses [lon, lat]
-      },
+        coordinates: [parseFloat(lon), parseFloat(lat)]
+      }
     });
 
     await incident.save();

@@ -20,17 +20,25 @@ const incidentSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['flood', 'power', 'travel', 'other'],
+    enum: ['flood', 'power', 'travel', 'medical', 'supplies', 'other'],
     default: 'other',
   },
   description: {
     type: String,
     default: '',
   },
+<<<<<<< HEAD
   userId: {
     type: String,
     required: false,
   },
+=======
+  userId: {              
+    type: String,     
+    index: true,         
+    default: 'anonymous'
+  },                    
+>>>>>>> d4941594e4955ef9f19895eca4eeb48f2a5d41ce
   location: {
     type: {
       type: String,
@@ -38,7 +46,7 @@ const incidentSchema = new mongoose.Schema({
       required: true,
     },
     coordinates: {
-      type: [Number], // [longitude, latitude]
+      type: [Number],
       required: true,
     },
   },
