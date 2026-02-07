@@ -11,7 +11,7 @@ const router = express.Router();
  */
 router.post('/', async (req, res) => {
   try {
-    const { type, category, description, lat, lon } = req.body;
+    const { type, category, description, lat, lon, userId } = req.body;
 
     // Basic validation
     if (!type) {
@@ -22,14 +22,17 @@ router.post('/', async (req, res) => {
     }
 
     // Create incident with GeoJSON location
+
+
     const incident = new Incident({
       type,
       category: category || 'other',
       description: description || '',
+      userId: userId || 'anonymous', 
       location: {
         type: 'Point',
-        coordinates: [parseFloat(lon), parseFloat(lat)], // GeoJSON uses [lon, lat]
-      },
+        coordinates: [parseFloat(lon), parseFloat(lat)]
+      }
     });
 
     await incident.save();

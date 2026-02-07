@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 const incidentsRouter = require('./routes/incidents');
 const sheltersRouter = require('./routes/shelters');
 const routesSafeRouter = require('./routes/routesSafe');
+const usersRouter = require('./routes/users');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,6 +21,7 @@ app.use(express.json());
 app.use('/api/incidents', incidentsRouter);
 app.use('/api/shelters', sheltersRouter);
 app.use('/api/routes/safe', routesSafeRouter);
+app.use('/api/users', usersRouter);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
