@@ -10,7 +10,7 @@ const LearningPanel = () => {
   } else if (!learningResources.length) {
     console.log('[LearningPanel] learningResources is empty array!');
   }
-  if (!learningResources || !learningResources.length) {
+  if (!learningResources?.length) {
     return (
       <div className="learning-panel">
         <header className="learning-header">Important Info</header>
@@ -32,8 +32,8 @@ const LearningPanel = () => {
             <h2 className="learning-title">{resource.title}</h2>
             <p className="learning-desc">{resource.shortDescription}</p>
             <ul className="learning-bullets">
-              {resource.bulletPoints.map((point, idx) => (
-                <li key={idx}>{point}</li>
+              {resource.bulletPoints.map((point) => (
+                <li key={resource.id + '-' + point.slice(0,16)}>{point}</li>
               ))}
             </ul>
             {resource.externalLink && (

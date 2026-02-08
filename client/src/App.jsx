@@ -1,4 +1,27 @@
 import React, { useState, useCallback, useEffect } from 'react';
+
+// ErrorBoundary to catch runtime errors and display them
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error('ErrorBoundary caught error:', error, errorInfo);
+  }
+  render() {
+    if (this.state.hasError) {
+      return <div style={{color:'red',padding:'2rem'}}><h2>Something went wrong.</h2><pre>{this.state.error?.toString()}</pre></div>;
+    }
+    return this.props.children;
+  ErrorBoundary.propTypes = {
+    children: require('prop-types').node
+  };
+  }
+}
 import LearningPanel from './components/LearningPanel';
 import { requestNotificationPermission, showNotification } from './utils/notifications';
 import MapView from './components/MapView';
@@ -185,6 +208,7 @@ function App() {
   }, [darkMode]);
 
   return (
+    <ErrorBoundary>
     <div className={"app" + (darkMode ? " dark" : "") }>
       {/* WebSocket notification banner */}
       {wsNotification && (
@@ -340,6 +364,7 @@ function App() {
         </div>
       )}
     </div>
+    </ErrorBoundary>
   );
 }
 
