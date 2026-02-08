@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap, useMapEvents } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, GeoJSON, useMap, useMapEvents } from 'react-leaflet';
+import { useFloodZones, useHistoricalFloodZones } from '../hooks/useFloodZones';
 import L from 'leaflet';
 
 // Fix for default marker icons in React-Leaflet
@@ -148,6 +149,9 @@ function MapView({
   onMapClick = null,
   currentUserId = null,
 }) {
+  // Load flood zones and historical flood zones
+  const floodZones = useFloodZones();
+  const historicalFloodZones = useHistoricalFloodZones();
 MapView.propTypes = {
   incidents: PropTypes.arrayOf(PropTypes.shape({
     _id: PropTypes.string,
@@ -208,6 +212,25 @@ MapView.propTypes = {
       className="map-container"
       zoomControl={false}
     >
+      {/* Flood Zones Overlay */}
+      {floodZones && (
+        <GeoJSON data={floodZones} style={{
+          color: '#2563eb',
+          fillColor: '#2563eb',
+          fillOpacity: 0.25,
+          weight: 1,
+        }} />
+      )}
+      {/* Historical Flood Zones Overlay */}
+      {historicalFloodZones && (
+        <GeoJSON data={historicalFloodZones} style={{
+          color: '#f59e42',
+          fillColor: '#f59e42',
+          fillOpacity: 0.18,
+          weight: 1,
+          dashArray: '6, 6',
+        }} />
+      )}
       {/* Base tile layer - OpenStreetMap */}
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
