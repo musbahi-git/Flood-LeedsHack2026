@@ -7,9 +7,10 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
+const booleanPointInPolygon = require('@turf/boolean-point-in-polygon');
 
-// Load flood zones GeoJSON (placeholder)
 let floodZones = null;
+let historicalFloodZones = null;
 
 /**
  * Load flood zones data from GeoJSON file.
@@ -19,13 +20,22 @@ let floodZones = null;
  */
 function loadFloodZones() {
   try {
-    const filePath = path.join(__dirname, '../data/flood_zones.geojson');
-    const data = fs.readFileSync(filePath, 'utf8');
-    floodZones = JSON.parse(data);
+    const floodFile = path.join(__dirname, '../data/flood_zones.geojson');
+    const floodData = fs.readFileSync(floodFile, 'utf8');
+    floodZones = JSON.parse(floodData);
     console.log('[floodRiskService] Flood zones loaded');
   } catch (error) {
     console.warn('[floodRiskService] Could not load flood zones:', error.message);
     floodZones = { type: 'FeatureCollection', features: [] };
+  }
+  try {
+    const histFile = path.join(__dirname, '../data/historical_flood_zones.geojson');
+    const histData = fs.readFileSync(histFile, 'utf8');
+    historicalFloodZones = JSON.parse(histData);
+    console.log('[floodRiskService] Historical flood zones loaded');
+  } catch (error) {
+    console.warn('[floodRiskService] Could not load historical flood zones:', error.message);
+    historicalFloodZones = { type: 'FeatureCollection', features: [] };
   }
 }
 
@@ -41,13 +51,23 @@ function loadFloodZones() {
  * - Consider multiple flood zone severity levels
  */
 function getFloodRisk(lat, lon) {
-  // TODO: Implement real flood risk calculation
-  // - Check if point is in any flood zone polygon
-  // - Return severity based on zone properties
-  
-  // Stubbed response - returns random risk for demonstration
-  console.log(`[floodRiskService] getFloodRisk called for (${lat}, ${lon}) - stubbed`);
-  return 0; // Return safe by default
+  // Check active flood zones
+  for (const feature of floodZones.features) {
+    if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+      if (booleanPointInPolygon([lon, lat], feature)) {
+        return feature.properties.risk === 'high' ? 1 : feature.properties.risk === 'medium' ? 0.5 : 0.2;
+      }
+    }
+  }
+  // Check historical flood zones
+  for (const feature of historicalFloodZones.features) {
+    if (feature.geometry.type === 'Polygon' || feature.geometry.type === 'MultiPolygon') {
+      if (booleanPointInPolygon([lon, lat], feature)) {
+        return feature.properties.risk === 'high' ? 0.8 : feature.properties.risk === 'medium' ? 0.4 : 0.1;
+      }
+    }
+  }
+  return 0; // Safe by default
 }
 
 /**
@@ -59,12 +79,17 @@ function getFloodRisk(lat, lon) {
  * TODO: Person C - Sample points along route and calculate average risk
  */
 function getRouteFloodRisk(coordinates) {
-  // TODO: Implement route-based flood risk calculation
-  // - Sample points at regular intervals
-  // - Calculate average or max flood risk
-  
-  console.log('[floodRiskService] getRouteFloodRisk called - stubbed');
-  return 0;
+  // Sample points along route and check risk
+  if (!Array.isArray(coordinates) || coordinates.length === 0) return 0;
+  let totalRisk = 0;
+  let count = 0;
+  for (const coord of coordinates) {
+    const lon = Array.isArray(coord) ? coord[0] : coord.lon;
+    const lat = Array.isArray(coord) ? coord[1] : coord.lat;
+    totalRisk += getFloodRisk(lat, lon);
+    count++;
+  }
+  return count > 0 ? totalRisk / count : 0;
 }
 
 // Initialize flood zones on module load

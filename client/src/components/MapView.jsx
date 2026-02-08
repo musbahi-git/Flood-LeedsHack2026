@@ -339,7 +339,9 @@ MapView.propTypes = {
             <Popup>
               <div className="shelter-popup">
                 <strong>🏠 {shelter.name}</strong>
-                <p>Safe shelter location</p>
+                <p>{shelter.address}</p>
+                <p><b>Capacity:</b> {shelter.capacity} | <b>Current:</b> {shelter.currentOccupancy}</p>
+                <p><b>Amenities:</b> {Array.isArray(shelter.amenities) ? shelter.amenities.join(', ') : 'N/A'}</p>
               </div>
             </Popup>
           </Marker>

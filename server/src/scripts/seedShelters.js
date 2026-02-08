@@ -49,6 +49,42 @@ async function seed() {
         amenities: ['water', 'food', 'medical'],
         isActive: true,
       },
+      {
+        name: 'Armley Leisure Centre Shelter',
+        location: { type: 'Point', coordinates: [-1.5832, 53.7991] },
+        address: 'Carr Crofts, Armley, Leeds LS12 3HB',
+        capacity: 180,
+        currentOccupancy: 70,
+        amenities: ['water', 'food', 'beds', 'showers', 'wifi'],
+        isActive: true,
+      },
+      {
+        name: 'Headingley Community Hall',
+        location: { type: 'Point', coordinates: [-1.5735, 53.8202] },
+        address: 'North Lane, Headingley, Leeds LS6 3HG',
+        capacity: 140,
+        currentOccupancy: 55,
+        amenities: ['water', 'food', 'beds', 'charging'],
+        isActive: true,
+      },
+      {
+        name: 'Holbeck Youth Centre',
+        location: { type: 'Point', coordinates: [-1.565, 53.785] },
+        address: 'Holbeck, Leeds LS11 9QX',
+        capacity: 100,
+        currentOccupancy: 40,
+        amenities: ['water', 'food', 'beds', 'wifi'],
+        isActive: true,
+      },
+      {
+        name: 'Beeston Community Shelter',
+        location: { type: 'Point', coordinates: [-1.572, 53.773] },
+        address: 'Beeston Road, Leeds LS11 8ND',
+        capacity: 110,
+        currentOccupancy: 50,
+        amenities: ['water', 'food', 'beds', 'showers'],
+        isActive: true,
+      },
     ]);
 
     console.log(`Seeded ${shelters.length} shelters successfully`);
