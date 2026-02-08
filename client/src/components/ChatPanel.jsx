@@ -37,7 +37,6 @@ const ChatPanel = () => {
     if (!input.trim()) return;
     const msg = { user: 'Anonymous', text: input.trim(), time: new Date().toLocaleTimeString() };
     ws.current.send(JSON.stringify(msg));
-    setMessages((prev) => [...prev, msg]);
     setInput('');
   };
 
