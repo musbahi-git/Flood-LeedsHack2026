@@ -53,7 +53,6 @@ Incidents are tagged by category — flood, power outage, travel disruption, med
 | **Backend** | Node.js · Express · Mongoose |
 | **Database** | MongoDB Atlas (Geospatial 2dsphere indexing) |
 | **AI** | Google Gemini API |
-| **Routing** | Google Maps Directions API |
 | **Flood Data** | UK Environment Agency Real-Time Flood API |
 
 </div>
@@ -233,3 +232,4 @@ Built in **21 hours** at **LeedsHack 2026** by a team of 3:
 **Because when the water rises, every second counts.**
 
 </div>
+
