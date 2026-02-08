@@ -1,48 +1,38 @@
 const Incident = require('../models/Incident');
+const { getFloodRisk } = require('./floodRiskService');
+const { haversineDistance } = require('../utils/geo');
 
 /**
- * Haversine distance in meters
+ * Calculates a weight for a single edge based on environmental risk.
+ * edgeData expected to contain: { baseTime, distance, coordinates }
  */
-function distance(a, b) {
-  const R = 6371e3;
-  const φ1 = a.lat * Math.PI / 180;
-  const φ2 = b.lat * Math.PI / 180;
-  const Δφ = (b.lat - a.lat) * Math.PI / 180;
-  const Δλ = (b.lon - a.lon) * Math.PI / 180;
+async function calculateEdgeCost(edgeData, env) {
+  let penaltyMultiplier = 1.0;
 
-  const x =
-    Math.sin(Δφ / 2) ** 2 +
-    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+  // 1. HARD BLOCK: Check for Severe Warnings or Verified Closures
+  const floodRisk = getFloodRisk(edgeData.coordinates); 
+  if (floodRisk.severity === 'severe') return Infinity;
 
-  return 2 * R * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
-}
+  // 2. SOFT RISK: Add penalties for Flood Alerts (Severity 3)
+  if (floodRisk.severity === 'alert') penaltyMultiplier += 3.0;
 
-/**
- * Score routes based on proximity to recent incidents
- */
-async function scoreRoutes(routes) {
+  // 3. INFRASTRUCTURE & HISTORIC PENALTIES
+  if (edgeData.isUnderpass) penaltyMultiplier += 2.0;
+  if (edgeData.isHistoricZone) penaltyMultiplier += 1.5;
+
+  // 4. COMMUNITY INCIDENTS: Penalty based on proximity to reports
   const recentIncidents = await Incident.find({
-    createdAt: { $gte: new Date(Date.now() - 2 * 60 * 60 * 1000) },
+    createdAt: { $gte: new Date(Date.now() - 2 * 60 * 60 * 1000) }
   });
 
-  return routes.map(route => {
-    let risk = 0;
+  for (const incident of recentIncidents) {
+    const [lon, lat] = incident.location.coordinates;
+    const d = haversineDistance(edgeData.lat, edgeData.lon, lat, lon);
+    if (d < 100) penaltyMultiplier += 5.0; // High risk near incident
+    else if (d < 250) penaltyMultiplier += 1.5;
+  }
 
-    for (const point of route.coordinates) {
-      for (const incident of recentIncidents) {
-        const [lon, lat] = incident.location.coordinates;
-        const d = distance(point, { lat, lon });
-
-        if (d < 100) risk += 0.04;
-        else if (d < 250) risk += 0.015;
-      }
-    }
-
-    return {
-      ...route,
-      dangerScore: Math.min(risk, 1),
-    };
-  });
+  return edgeData.baseTime * penaltyMultiplier;
 }
 
-module.exports = { scoreRoutes };
+module.exports = { calculateEdgeCost };
