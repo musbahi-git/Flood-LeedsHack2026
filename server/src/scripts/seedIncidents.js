@@ -3,7 +3,8 @@
 
 const mongoose = require('mongoose');
 const Incident = require('../models/Incident');
-require('dotenv').config({ path: '../../.env' });
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -62,7 +63,7 @@ const sampleIncidents = [
 
 async function seed() {
   try {
-    await mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
     await Incident.deleteMany({});
     await Incident.insertMany(sampleIncidents);

@@ -3,7 +3,7 @@ import path from "path";
 import GeoTIFF from "geotiff";
 import { LatLng } from "./routing/types";
 
-const tiffPath = path.join(__dirname, "../data/leeds_srtm.tif");
+const tiffPath = path.join(__dirname, "../data/srtm_38_03.tif");
 let tiff: GeoTIFF.GeoTIFF | null = null;
 let image: GeoTIFF.Image | null = null;
 
