@@ -23,7 +23,6 @@ class ErrorBoundary extends React.Component {
 ErrorBoundary.propTypes = {
   children: require('prop-types').node
 };
-}
 import LearningPanel from './components/LearningPanel';
 import { requestNotificationPermission, showNotification } from './utils/notifications';
 import MapView from './components/MapView';
