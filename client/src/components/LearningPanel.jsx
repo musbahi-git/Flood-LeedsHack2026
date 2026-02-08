@@ -1,5 +1,5 @@
 import React from "react";
-import { learningResources } from "../data/learningResources";
+import { learningResources } from "../data/learningResources.js";
 import "../styles/main.css";
 
 const LearningPanel = () => {
