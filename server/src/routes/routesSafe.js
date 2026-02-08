@@ -5,6 +5,7 @@ const Incident = require('../models/Incident'); // Import Incident Model
 const path = require('ngraph.path');
 const { buildRoadGraph, findNearestNodeInComponent } = require('../utils/graphBuilder');
 const { haversineDistance } = require('../utils/geo');
+const { getFloodRisk } = require('../services/floodRiskService');
 
 // Helper to find nearest shelter
 async function findNearestShelter(origin) {
@@ -88,10 +89,16 @@ router.post('/', async (req, res) => {
         // RULE 1: Avoid Tunnels
         if (link.data.isTunnel) cost *= 10;
 
-        // RULE 2: AVOID FLOOD ZONES
-        if (dangerNodes.has(from.id) || dangerNodes.has(to.id)) {
-           return cost * 10000; // Virtually impossible cost
-        }
+          // RULE 2: AVOID FLOOD ZONES
+          if (dangerNodes.has(from.id) || dangerNodes.has(to.id)) {
+            return cost * 10000; // Virtually impossible cost
+          }
+          // RULE 3: Avoid flood zones (active and historical)
+          const floodRiskFrom = getFloodRisk(from.data.lat, from.data.lon);
+          const floodRiskTo = getFloodRisk(to.data.lat, to.data.lon);
+          if (floodRiskFrom > 0.1 || floodRiskTo > 0.1) {
+           return cost * 10000; // Block route through flood zone
+          }
 
         return cost;
       },

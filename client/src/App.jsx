@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import LearningPanel from './components/LearningPanel';
 import { requestNotificationPermission, showNotification } from './utils/notifications';
 import MapView from './components/MapView';
 import ReportModal from './components/ReportModal';
@@ -52,6 +53,8 @@ function App() {
   // UI state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [showIncidentList, setShowIncidentList] = useState(false);
+  const [activeView, setActiveView] = useState('map');
+  const [darkMode, setDarkMode] = useState(false);
 
   // PWA install prompt state
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -170,8 +173,12 @@ function App() {
     setIsReportModalOpen(true);
   };
 
+  useEffect(() => {
+    document.body.classList.toggle('dark-mode', darkMode);
+  }, [darkMode]);
+
   return (
-    <div className="app">
+    <div className={"app" + (darkMode ? " dark" : "") }>
       {/* WebSocket notification banner */}
       {wsNotification && (
         <div className={`ws-notification ws-notification-${wsNotifType || 'default'}`} role="alert" aria-live="assertive">
@@ -182,49 +189,63 @@ function App() {
       <header className="app-header">
         <h1 className="app-title">Haven</h1>
         <span className="app-tagline">Community Safety Map</span>
+        <div className="app-menu">
+          <button className="btn btn-small btn-ghost" onClick={() => setDarkMode(dm => !dm)}>
+            {darkMode ? '☀️ Light' : '🌙 Dark'}
+          </button>
+          <button className={"btn btn-small btn-primary" + (activeView === 'learn' ? ' active' : '')} onClick={() => setActiveView('learn')}>
+            📚 Learn
+          </button>
+        </div>
       </header>
 
-      {/* Map fills the viewport */}
-      <MapView
-        incidents={incidents}
-        routes={routes}
-        chosenRouteId={chosenRouteId}
-        userLocation={userLocation}
-        shelters={shelters}
-        onMapClick={handleMapClick}
-        currentUserId={userId}
-      />
+      {/* Main content: Map or LearningPanel */}
+      {activeView === 'map' ? (
+        <MapView
+          incidents={incidents}
+          routes={routes}
+          chosenRouteId={chosenRouteId}
+          userLocation={userLocation}
+          shelters={shelters}
+          onMapClick={handleMapClick}
+          currentUserId={userId}
+        />
+      ) : (
+        <LearningPanel />
+      )}
 
-      {/* Floating action buttons */}
-      <div className="floating-actions">
-        <button
-          className="fab fab-report"
-          onClick={handleOpenReport}
-          title="Report incident or request help"
-        >
-          <span className="fab-icon"><ReportIcon size={18} /></span>
-          <span className="fab-label">Report</span>
-        </button>
+      {/* Floating action buttons (only show on map view) */}
+      {activeView === 'map' && (
+        <div className="floating-actions">
+          <button
+            className="fab fab-report"
+            onClick={handleOpenReport}
+            title="Report incident or request help"
+          >
+            <span className="fab-icon"><ReportIcon size={18} /></span>
+            <span className="fab-label">Report</span>
+          </button>
 
-        <button
-          className="fab fab-route"
-          onClick={handleRequestRoute}
-          disabled={routeLoading}
-          title="Find safe route to shelter"
-        >
-          <span className="fab-icon"><RouteIcon size={18} /></span>
-          <span className="fab-label">{routeLoading ? 'Finding...' : 'Safe Route'}</span>
-        </button>
+          <button
+            className="fab fab-route"
+            onClick={handleRequestRoute}
+            disabled={routeLoading}
+            title="Find safe route to shelter"
+          >
+            <span className="fab-icon"><RouteIcon size={18} /></span>
+            <span className="fab-label">{routeLoading ? 'Finding...' : 'Safe Route'}</span>
+          </button>
 
-        <button
-          className="fab fab-list"
-          onClick={() => setShowIncidentList(!showIncidentList)}
-          title="View incident list"
-        >
-          <span className="fab-icon"><ListIcon size={18} /></span>
-          <span className="fab-label">List</span>
-        </button>
-      </div>
+          <button
+            className="fab fab-list"
+            onClick={() => setShowIncidentList(!showIncidentList)}
+            title="View incident list"
+          >
+            <span className="fab-icon"><ListIcon size={18} /></span>
+            <span className="fab-label">List</span>
+          </button>
+        </div>
+      )}
 
       {/* Safe Route Panel - shows when route is calculated */}
       <SafeRoutePanel
