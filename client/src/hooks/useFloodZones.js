@@ -10,11 +10,12 @@ function getApiBase() {
 
 
 
+
 export function useFloodZones() {
   const [floodZones, setFloodZones] = useState(null);
   useEffect(() => {
     const apiBase = getApiBase();
-    const url = apiBase + '/flood_zones';
+    const url = apiBase + '/api/flood_zones';
     fetch(url)
       .then(res => res.json())
       .then(setFloodZones)
@@ -26,11 +27,12 @@ export function useFloodZones() {
 
 
 
+
 export function useHistoricalFloodZones() {
   const [historicalFloodZones, setHistoricalFloodZones] = useState(null);
   useEffect(() => {
     const apiBase = getApiBase();
-    const url = apiBase + '/historical_flood_zones';
+    const url = apiBase + '/api/historical_flood_zones';
     fetch(url)
       .then(res => res.json())
       .then(setHistoricalFloodZones)
