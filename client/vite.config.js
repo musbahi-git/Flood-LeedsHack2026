@@ -20,6 +20,13 @@ export default defineConfig({
         secure: false,
         ws: true, // <--- Important: Enables WebSocket proxying
       },
+      // Proxy chat WebSocket
+      '/chat': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+        ws: true,
+      },
     },
   },
   envPrefix: 'VITE_',
