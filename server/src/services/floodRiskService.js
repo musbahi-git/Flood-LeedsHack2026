@@ -5,8 +5,8 @@
  * TODO: Person C - Implement real flood risk assessment using GeoJSON data.
  */
 
-const fs = require('fs');
-const path = require('path');
+const fs = require('node:fs');
+const path = require('node:path');
 
 // Load flood zones GeoJSON (placeholder)
 let floodZones = null;

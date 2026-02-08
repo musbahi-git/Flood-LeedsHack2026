@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 
@@ -52,6 +53,9 @@ const shelterIcon = createColoredIcon('#3b82f6', '🏠');
  * Component to handle map clicks
  */
 function MapClickHandler({ onMapClick }) {
+MapClickHandler.propTypes = {
+  onMapClick: PropTypes.func,
+};
   useMapEvents({
     click: (e) => {
       if (onMapClick) {
@@ -66,6 +70,13 @@ function MapClickHandler({ onMapClick }) {
  * Component to center map on user location
  */
 function LocationMarker({ location }) {
+LocationMarker.propTypes = {
+  location: PropTypes.shape({
+    lat: PropTypes.number,
+    lon: PropTypes.number,
+    accuracy: PropTypes.number,
+  }),
+};
   const map = useMap();
 
   useEffect(() => {
@@ -137,6 +148,43 @@ function MapView({
   onMapClick = null,
   currentUserId = null,
 }) {
+MapView.propTypes = {
+  incidents: PropTypes.arrayOf(PropTypes.shape({
+    _id: PropTypes.string,
+    id: PropTypes.string,
+    location: PropTypes.shape({
+      coordinates: PropTypes.arrayOf(PropTypes.number),
+    }),
+    lat: PropTypes.number,
+    lon: PropTypes.number,
+    type: PropTypes.string,
+    category: PropTypes.string,
+    description: PropTypes.string,
+    createdAt: PropTypes.string,
+    userId: PropTypes.string,
+  })),
+  routes: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.string,
+    coordinates: PropTypes.array,
+    dangerScore: PropTypes.number,
+  })),
+  chosenRouteId: PropTypes.string,
+  userLocation: PropTypes.shape({
+    lat: PropTypes.number,
+    lon: PropTypes.number,
+    accuracy: PropTypes.number,
+  }),
+  shelters: PropTypes.arrayOf(PropTypes.shape({
+    _id: PropTypes.string,
+    id: PropTypes.string,
+    name: PropTypes.string,
+    location: PropTypes.shape({
+      coordinates: PropTypes.arrayOf(PropTypes.number),
+    }),
+  })),
+  onMapClick: PropTypes.func,
+  currentUserId: PropTypes.string,
+};
   // Default center: Leeds, UK
   const defaultCenter = [53.8008, -1.5491];
   const defaultZoom = 13;

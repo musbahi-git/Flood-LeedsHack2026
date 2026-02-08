@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * SafeRoutePanel Component
@@ -114,3 +115,19 @@ function SafeRoutePanel({
 }
 
 export default SafeRoutePanel;
+
+SafeRoutePanel.propTypes = {
+  onRequestRoute: PropTypes.func.isRequired,
+  onClearRoute: PropTypes.func.isRequired,
+  explanation: PropTypes.string,
+  loading: PropTypes.bool.isRequired,
+  error: PropTypes.string,
+  hasRoute: PropTypes.bool.isRequired,
+  userLocation: PropTypes.shape({
+    lat: PropTypes.number,
+    lon: PropTypes.number,
+    accuracy: PropTypes.number,
+  }),
+  onRequestLocation: PropTypes.func,
+  locationLoading: PropTypes.bool,
+};

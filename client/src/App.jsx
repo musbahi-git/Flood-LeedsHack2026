@@ -4,6 +4,7 @@ import ReportModal from './components/ReportModal';
 import SafeRoutePanel from './components/SafeRoutePanel';
 import IncidentList from './components/IncidentList';
 import { useIncidents } from './hooks/useIncidents';
+import { useIncidentWebSocket } from './hooks/useIncidentWebSocket';
 import { useUserLocation } from './hooks/useUserLocation';
 import { createIncident } from './api/incidentsApi';
 import { getSafeRoute } from './api/routesApi';
@@ -20,6 +21,21 @@ const userId = getOrCreateUserId();
 function App() {
   // Data hooks
   const { incidents, loading: incidentsLoading, error: incidentsError, refresh } = useIncidents();
+
+  // Notification state
+  const [wsNotification, setWsNotification] = useState(null);
+  const [wsNotifType, setWsNotifType] = useState(null);
+  const wsNotifTimeout = React.useRef(null);
+
+  // WebSocket: listen for new incidents
+  useIncidentWebSocket((incident, notification, type) => {
+    setWsNotification(notification);
+    setWsNotifType(type);
+    refresh(); // Refresh incidents list
+    if (wsNotifTimeout.current) clearTimeout(wsNotifTimeout.current);
+    // Auto-hide notification after 5s
+    wsNotifTimeout.current = setTimeout(() => setWsNotification(null), 5000);
+  });
   const { location: userLocation, loading: locationLoading, requestLocation } = useUserLocation();
 
   // UI state
@@ -56,10 +72,10 @@ function App() {
       setShowInstallBanner(true);
     };
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    globalThis.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+      globalThis.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     };
   }, []);
 
@@ -142,6 +158,12 @@ function App() {
 
   return (
     <div className="app">
+      {/* WebSocket notification banner */}
+      {wsNotification && (
+        <div className={`ws-notification ws-notification-${wsNotifType || 'default'}`} style={{position:'fixed',top:0,left:0,right:0,zIndex:1000,background:'#222',color:'#fff',padding:'12px',textAlign:'center',fontWeight:'bold'}}>
+          <span>{wsNotification}</span>
+        </div>
+      )}
       {/* Header */}
       <header className="app-header">
         <h1 className="app-title">🏠 Haven</h1>

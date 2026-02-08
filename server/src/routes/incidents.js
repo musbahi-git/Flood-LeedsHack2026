@@ -22,19 +22,43 @@ router.post('/', async (req, res) => {
     }
 
     // Create incident with GeoJSON location
-
-
     const incident = new Incident({
       type,
       category: category || 'other',
       description: description || '',
+      userId: userId || 'anonymous',
       location: {
         type: 'Point',
-        coordinates: [parseFloat(lon), parseFloat(lat)]
+        coordinates: [Number.parseFloat(lon), Number.parseFloat(lat)]
       }
     });
 
     await incident.save();
+
+    // --- WebSocket broadcast ---
+    const io = req.app.get('io');
+    if (io) {
+      let notifMsg = '';
+      switch (type) {
+        case 'incident':
+          notifMsg = `New incident reported: ${description || category}`;
+          break;
+        case 'need_help':
+          notifMsg = `Someone needs help: ${description || category}`;
+          break;
+        case 'can_help':
+          notifMsg = `Help offered: ${description || category}`;
+          break;
+        default:
+          notifMsg = `New report: ${description || category}`;
+      }
+      io.emit('new-incident', {
+        incident,
+        notification: notifMsg,
+        type,
+      });
+    }
+
     res.status(201).json(incident);
   } catch (error) {
     console.error('Error creating incident:', error);
@@ -61,12 +85,12 @@ router.get('/', async (req, res) => {
 
     // Geo filter if lat/lon provided
     if (lat && lon) {
-      const radiusMeters = parseInt(radius) || 5000;
+      const radiusMeters = Number.parseInt(radius) || 5000;
       query.location = {
         $near: {
           $geometry: {
             type: 'Point',
-            coordinates: [parseFloat(lon), parseFloat(lat)],
+            coordinates: [Number.parseFloat(lon), Number.parseFloat(lat)],
           },
           $maxDistance: radiusMeters,
         },
@@ -75,7 +99,7 @@ router.get('/', async (req, res) => {
 
     // Time filter
     if (sinceMinutes) {
-      const since = new Date(Date.now() - parseInt(sinceMinutes) * 60 * 1000);
+      const since = new Date(Date.now() - Number.parseInt(sinceMinutes) * 60 * 1000);
       query.createdAt = { $gte: since };
     }
 

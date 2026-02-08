@@ -31,18 +31,11 @@ const incidentSchema = new mongoose.Schema({
     type: String,
     default: '',
   },
-<<<<<<< HEAD
   userId: {
     type: String,
-    required: false,
+    index: true,
+    default: 'anonymous',
   },
-=======
-  userId: {              
-    type: String,     
-    index: true,         
-    default: 'anonymous'
-  },                    
->>>>>>> d4941594e4955ef9f19895eca4eeb48f2a5d41ce
   location: {
     type: {
       type: String,

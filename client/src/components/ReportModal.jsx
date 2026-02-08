@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import React, { useState, useEffect } from 'react';
 
 /**
@@ -13,6 +14,20 @@ import React, { useState, useEffect } from 'react';
  * - userId: anonymous user ID for tracking user's own pins
  */
 function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocation, userId }) {
+  ReportModal.propTypes = {
+    isOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onSubmit: PropTypes.func.isRequired,
+    currentLocation: PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lon: PropTypes.number.isRequired,
+    }),
+    clickedLocation: PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lon: PropTypes.number.isRequired,
+    }),
+    userId: PropTypes.string,
+  };
   const [formData, setFormData] = useState({
     type: 'incident',
     category: 'flood',

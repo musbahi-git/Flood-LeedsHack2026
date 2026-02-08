@@ -6,8 +6,11 @@ import axios from 'axios';
 // ============================================
 const USE_MOCK_API = false;
 
-// API base URL - uses Vite proxy in development
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+// API base URL - works with Vite, Jest, and Vercel
+const API_BASE =
+  typeof process !== 'undefined' && process.env?.VITE_API_URL
+    ? process.env.VITE_API_URL
+    : '/api';
 
 // ============================================
 // MOCK DATA
@@ -29,7 +32,7 @@ const MOCK_INCIDENTS = [
     category: 'medical',
     description: 'Elderly person needs help getting to shelter. Unable to walk far.',
     lat: 53.8025,
-    lon: -1.5450,
+    lon: -1.545,
     userId: 'other-user-2',
     createdAt: new Date(Date.now() - 25 * 60000).toISOString(), // 25 mins ago
   },
@@ -38,8 +41,8 @@ const MOCK_INCIDENTS = [
     type: 'can_help',
     category: 'supplies',
     description: 'I have spare bottled water and blankets. Can deliver within 2km.',
-    lat: 53.7980,
-    lon: -1.5520,
+    lat: 53.798,
+    lon: -1.552,
     userId: 'other-user-1',
     createdAt: new Date(Date.now() - 45 * 60000).toISOString(), // 45 mins ago
   },
@@ -48,8 +51,8 @@ const MOCK_INCIDENTS = [
     type: 'incident',
     category: 'power',
     description: 'Power lines down on Oak Avenue. Area blocked off.',
-    lat: 53.8050,
-    lon: -1.5400,
+    lat: 53.805,
+    lon: -1.54,
     userId: 'other-user-3',
     createdAt: new Date(Date.now() - 2 * 60 * 60000).toISOString(), // 2 hours ago
   },
@@ -58,8 +61,8 @@ const MOCK_INCIDENTS = [
     type: 'need_help',
     category: 'travel',
     description: 'Car stuck in flood water on Bridge Road. Need tow or lift.',
-    lat: 53.7960,
-    lon: -1.5550,
+    lat: 53.796,
+    lon: -1.555,
     userId: 'other-user-2',
     createdAt: new Date(Date.now() - 5 * 60000).toISOString(), // 5 mins ago
   },

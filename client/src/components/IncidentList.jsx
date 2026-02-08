@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 /**
  * Format relative time from date string
@@ -127,3 +128,17 @@ function IncidentList({ incidents = [], loading = false, error = null, onClose }
 }
 
 export default IncidentList;
+
+IncidentList.propTypes = {
+  incidents: PropTypes.arrayOf(PropTypes.shape({
+    _id: PropTypes.string,
+    id: PropTypes.string,
+    type: PropTypes.string,
+    category: PropTypes.string,
+    description: PropTypes.string,
+    createdAt: PropTypes.string,
+  })),
+  loading: PropTypes.bool,
+  error: PropTypes.string,
+  onClose: PropTypes.func.isRequired,
+};
