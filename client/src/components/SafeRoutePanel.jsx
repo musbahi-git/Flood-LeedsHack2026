@@ -1,26 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { RouteIcon } from './Icons';
 
 /**
  * SafeRoutePanel Component
  * Panel for requesting and displaying safe routes to shelters.
- * 
- * Props:
- * - onRequestRoute(): function called when user presses "Find safe route"
- * - onClearRoute(): function called when user clears the route
- * - explanation: string from backend
- * - loading: boolean
- * - error: string or null
- * - hasRoute: boolean - whether a route is currently displayed
- * - userLocation: current user location or null
- * - onRequestLocation(): request user location
- * - locationLoading: boolean
  */
-function SafeRoutePanel({ 
-  onRequestRoute, 
+function SafeRoutePanel({
+  onRequestRoute,
   onClearRoute,
-  explanation, 
-  loading, 
+  explanation,
+  loading,
   error,
   hasRoute,
   userLocation,
@@ -36,14 +26,17 @@ function SafeRoutePanel({
       {isVisible && (
         <div className="safe-route-panel">
           <div className="panel-header">
-            <h3>🛤️ Safe Route</h3>
+            <h3>
+              <span className="panel-header-icon"><RouteIcon size={18} /></span>
+              Safe Route
+            </h3>
             {hasRoute && (
-              <button 
-                className="panel-close" 
+              <button
+                className="panel-close"
                 onClick={onClearRoute}
                 aria-label="Clear route"
               >
-                ×
+                &times;
               </button>
             )}
           </div>
@@ -61,9 +54,8 @@ function SafeRoutePanel({
             {/* Error state */}
             {error && !loading && (
               <div className="route-error">
-                <span className="error-icon">⚠️</span>
                 <p>{error}</p>
-                <button 
+                <button
                   className="btn btn-small btn-outline"
                   onClick={onRequestRoute}
                 >
@@ -76,14 +68,12 @@ function SafeRoutePanel({
             {hasRoute && !loading && !error && (
               <div className="route-success">
                 <div className="route-badge">
-                  <span className="badge-icon">✅</span>
                   <span className="badge-text">Route Found</span>
                 </div>
-                
+
                 {explanation && (
                   <div className="explanation-box">
                     <div className="explanation-header">
-                      <span>🤖</span>
                       <strong>AI Safety Analysis</strong>
                     </div>
                     <p className="explanation-text">{explanation}</p>
@@ -91,7 +81,7 @@ function SafeRoutePanel({
                 )}
 
                 <div className="route-actions">
-                  <button 
+                  <button
                     className="btn btn-outline btn-full"
                     onClick={onClearRoute}
                   >
