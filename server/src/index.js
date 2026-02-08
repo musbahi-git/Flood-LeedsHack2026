@@ -84,7 +84,7 @@ async function startServer() {
 
     // Start listening
     server.listen(PORT, () => {
-      console.log(`FloodSafe server running on http://localhost:${PORT}`);
+      console.log(`FloodSafe server running on port ${PORT}`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);
