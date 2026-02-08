@@ -265,8 +265,16 @@ function App() {
       </header>
 
       {/* Main content: Map or LearningPanel */}
+      {/* Logging view rendering outside JSX */}
+      {(() => {
+        if (activeView === 'map') {
+          console.log('[App] Rendering MapView, activeView:', activeView);
+        } else {
+          console.log('[App] Rendering LearningPanel, activeView:', activeView);
+        }
+        return null;
+      })()}
       {activeView === 'map' ? (
-        {console.log('[App] Rendering MapView, activeView:', activeView)}
         <MapView
           incidents={incidents}
           routes={routes}
@@ -277,10 +285,7 @@ function App() {
           currentUserId={userId}
         />
       ) : (
-        <>
-          {console.log('[App] Rendering LearningPanel, activeView:', activeView)}
-          <LearningPanel />
-        </>
+        <LearningPanel />
       )}
 
       {/* Floating action buttons (only show on map view) */}
