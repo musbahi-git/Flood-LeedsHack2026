@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors({
   origin: [
-    'https://your-client.vercel.app', // Vercel client domain
+    'https://haven-leeds-hack2026-701sbhuwd-musbahi.vercel.app', // Actual Vercel domain
     'http://localhost:5173', // Local dev
   ],
   credentials: true
@@ -63,7 +63,7 @@ async function startServer() {
     const io = new Server(server, {
       cors: {
         origin: [
-          'https://your-client.vercel.app',
+          'https://haven-leeds-hack2026-701sbhuwd-musbahi.vercel.app',
           'http://localhost:5173',
         ],
         credentials: true
