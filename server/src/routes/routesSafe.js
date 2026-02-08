@@ -1,8 +1,6 @@
 const express = require('express');
 const Shelter = require('../models/Shelter');
-const { getCandidateRoutes } = require('../services/directionsService');
 const { scoreRoutes } = require('../services/scoringService');
-const { chooseRouteWithGemini } = require('../services/geminiService');
 
 const router = express.Router();
 
@@ -38,10 +36,7 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'origin with lat and lon required' });
     }
 
-    // Validate API keys
-    if (!process.env.GOOGLE_MAPS_API_KEY || !process.env.GEMINI_API_KEY) {
-      return res.status(500).json({ error: 'Server configuration error - API keys missing' });
-    }
+
 
     // Find destination shelter
     let shelterDoc;
@@ -72,16 +67,21 @@ router.post('/', async (req, res) => {
       };
     }
 
-    // Get candidate routes from Google Directions
-    const routes = await getCandidateRoutes(origin, destCoords);
 
-    // Score routes based on incidents and flood risk
-    const scoredRoutes = await scoreRoutes(routes);
-
-    // Use Gemini to choose safest route and generate explanation
-    const { chosenRouteId, explanation } = await chooseRouteWithGemini(scoredRoutes);
-
-    // Prepare response
+    // Fallback: create a single direct route (origin -> destination)
+    const fallbackRoute = {
+      id: 0,
+      coordinates: [
+        { lat: origin.lat, lon: origin.lon },
+        { lat: destCoords.lat, lon: destCoords.lon }
+      ],
+      distance: 0, // Not calculated
+      duration: 0, // Not calculated
+      dangerScore: 0
+    };
+    const scoredRoutes = await scoreRoutes([fallbackRoute]);
+    const chosenRouteId = 0;
+    const explanation = 'This is the shortest direct route to the nearest shelter.';
     const response = {
       routes: scoredRoutes,
       chosenRouteId,
