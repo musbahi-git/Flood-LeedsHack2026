@@ -16,9 +16,12 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors({
   origin: [
-    'https://haven-leeds-hack2026-g9ul4rxc2-musbahi.vercel.app', // Actual Vercel domain
-    'https://affectionate-flexibility-production.up.railway.app', // Railway backend public domain
-    'http://localhost:5173', // Local dev
+    'https://haven-leeds-hack2026.vercel.app',
+    'https://haven-leeds-hack2026-musbahi.vercel.app',
+    'https://haven-leeds-hack2026-git-main-musbahi.vercel.app',
+    'https://haven-leeds-hack2026-64guzmq1s-musbahi.vercel.app',
+    'https://affectionate-flexibility-production.up.railway.app',
+    'http://localhost:5173',
   ],
   credentials: true
 }));
@@ -64,7 +67,10 @@ async function startServer() {
     const io = new Server(server, {
       cors: {
         origin: [
-          'https://haven-leeds-hack2026-g9ul4rxc2-musbahi.vercel.app',
+          'https://haven-leeds-hack2026.vercel.app',
+          'https://haven-leeds-hack2026-musbahi.vercel.app',
+          'https://haven-leeds-hack2026-git-main-musbahi.vercel.app',
+          'https://haven-leeds-hack2026-64guzmq1s-musbahi.vercel.app',
           'https://affectionate-flexibility-production.up.railway.app',
           'http://localhost:5173',
         ],
