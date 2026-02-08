@@ -1,3 +1,7 @@
+  // Log navigation and view rendering
+  useEffect(() => {
+    console.log('[App] Rendering view:', activeView);
+  }, [activeView]);
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
@@ -79,15 +83,20 @@ function App() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [showIncidentList, setShowIncidentList] = useState(false);
   const [activeView, setActiveView] = useState('map');
-  // Force reset to 'map' on every mount
-  useEffect(() => {
-    setActiveView('map');
-    console.log('[App] activeView (forced reset):', 'map');
-  }, []);
   // Debug: Log activeView changes
   useEffect(() => {
     console.log('[App] activeView:', activeView);
   }, [activeView]);
+
+  // Log button clicks
+  const handleLearnClick = () => {
+    console.log('[App] Learn button clicked, switching to learn view');
+    setActiveView('learn');
+  };
+  const handleMapClickButton = () => {
+    console.log('[App] Map button clicked, switching to map view');
+    setActiveView('map');
+  };
   const [darkMode, setDarkMode] = useState(false);
 
   // PWA install prompt state
@@ -228,14 +237,14 @@ function App() {
             <span className="app-tagline">Community Safety Map</span>
           </div>
           <div className="app-menu">
-            <button className="btn btn-small btn-ghost" onClick={() => setDarkMode(dm => !dm)}>
+            <button className="btn btn-small btn-ghost" onClick={() => { console.log('[App] Dark mode button clicked'); setDarkMode(dm => !dm); }}>
               {darkMode ? '☀️ Light' : '🌙 Dark'}
             </button>
             <button
               className={"btn btn-small btn-primary" + (activeView === 'learn' ? ' active' : '')}
               onClick={() => {
-                console.log('[Menu] Learn button clicked');
-                setActiveView('learn');
+                console.log('[App] Learn button click, switching to learn view');
+                handleLearnClick();
               }}
               aria-label="Show learning panel"
             >
@@ -244,8 +253,8 @@ function App() {
             <button
               className={"btn btn-small btn-ghost" + (activeView === 'map' ? ' active' : '')}
               onClick={() => {
-                console.log('[Menu] Map button clicked');
-                setActiveView('map');
+                console.log('[App] Map button click, switching to map view');
+                handleMapClickButton();
               }}
               aria-label="Show map view"
             >
@@ -257,6 +266,7 @@ function App() {
 
       {/* Main content: Map or LearningPanel */}
       {activeView === 'map' ? (
+        {console.log('[App] Rendering MapView, activeView:', activeView)}
         <MapView
           incidents={incidents}
           routes={routes}

@@ -3,6 +3,10 @@ import { learningResources } from "../data/learningResources.js";
 import "../styles/main.css";
 
 const LearningPanel = () => {
+    React.useEffect(() => {
+      console.log('[LearningPanel] Mounted');
+    }, []);
+    console.log('[LearningPanel] Rendering, resources:', learningResources?.length);
   // Debug: Log learningResources
   console.log('[LearningPanel] learningResources:', learningResources);
   if (!learningResources) {

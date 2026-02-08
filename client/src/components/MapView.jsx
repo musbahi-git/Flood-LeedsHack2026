@@ -161,8 +161,12 @@ function MapView({
   // Load flood zones and historical flood zones
   const floodZones = useFloodZones();
   const historicalFloodZones = useHistoricalFloodZones();
-  console.log('Flood Zones:', floodZones);
-  console.log('Historical Flood Zones:', historicalFloodZones);
+  console.log('[MapView] Flood Zones:', floodZones);
+  console.log('[MapView] Historical Flood Zones:', historicalFloodZones);
+  console.log('[MapView] incidents:', incidents);
+  console.log('[MapView] routes:', routes);
+  console.log('[MapView] userLocation:', userLocation);
+  console.log('[MapView] shelters:', shelters);
 
   // Default center: Leeds, UK
   const defaultCenter = [53.8008, -1.5491];
