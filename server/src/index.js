@@ -53,37 +53,41 @@ const http = require('node:http');
 const { Server } = require('socket.io');
 
 
-try {
-  // Connect to MongoDB
-  await connectDB();
+async function startServer() {
+  try {
+    // Connect to MongoDB
+    await connectDB();
 
-  // Create HTTP server and Socket.IO instance
-  const server = http.createServer(app);
-  const io = new Server(server, {
-    cors: {
-      origin: [
-        'https://your-client.vercel.app',
-        'http://localhost:5173',
-      ],
-      credentials: true
-    }
-  });
-
-  // Attach io to app for access in routes
-  app.set('io', io);
-
-  io.on('connection', (socket) => {
-    console.log('Client connected:', socket.id);
-    socket.on('disconnect', () => {
-      console.log('Client disconnected:', socket.id);
+    // Create HTTP server and Socket.IO instance
+    const server = http.createServer(app);
+    const io = new Server(server, {
+      cors: {
+        origin: [
+          'https://your-client.vercel.app',
+          'http://localhost:5173',
+        ],
+        credentials: true
+      }
     });
-  });
 
-  // Start listening
-  server.listen(PORT, () => {
-    console.log(`FloodSafe server running on http://localhost:${PORT}`);
-  });
-} catch (error) {
-  console.error('Failed to start server:', error);
-  process.exit(1);
+    // Attach io to app for access in routes
+    app.set('io', io);
+
+    io.on('connection', (socket) => {
+      console.log('Client connected:', socket.id);
+      socket.on('disconnect', () => {
+        console.log('Client disconnected:', socket.id);
+      });
+    });
+
+    // Start listening
+    server.listen(PORT, () => {
+      console.log(`FloodSafe server running on http://localhost:${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
 }
+
+startServer();
