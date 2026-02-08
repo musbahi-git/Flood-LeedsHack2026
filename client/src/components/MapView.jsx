@@ -157,6 +157,7 @@ function MapView({
   shelters = [],
   onMapClick = null,
   currentUserId = null,
+  darkMode = true,
 }) {
   // Load flood zones and historical flood zones
   const floodZones = useFloodZones();
@@ -188,7 +189,7 @@ function MapView({
     <MapContainer
       center={defaultCenter}
       zoom={defaultZoom}
-      className="map-container"
+      className={"map-container" + (darkMode ? " map-dark" : "")}
       zoomControl={false}
     >
       {/* Flood Zones Overlay */}
@@ -210,10 +211,17 @@ function MapView({
           dashArray: '8, 4',
         }} />
       )}
-      {/* Base tile layer - Dark theme */}
+      {/* Base tile layer - switches between light OSM and Stadia dark */}
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        key={darkMode ? 'dark' : 'light'}
+        attribution={darkMode
+          ? '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }
+        url={darkMode
+          ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png'
+          : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        }
       />
 
       {/* Map click handler */}
@@ -367,6 +375,7 @@ MapView.propTypes = {
   })),
   onMapClick: PropTypes.func,
   currentUserId: PropTypes.string,
+  darkMode: PropTypes.bool,
 };
 
 export default MapView;
