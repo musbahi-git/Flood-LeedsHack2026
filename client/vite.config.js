@@ -1,26 +1,26 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
-    host: true, // Allow external access (useful for mobile testing)
-    allowedHosts: ['.ngrok-free.dev', '.ngrok.io', '.ngrok-free.app', 'all'],
+    host: true,
     proxy: {
-      // Proxy API requests to backend during development
+      // Proxy API requests
       '/api': {
         target: 'http://localhost:3000',
         changeOrigin: true,
         secure: false,
       },
+      // Proxy WebSocket requests (Fixes the WS connection error)
+      '/socket.io': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        secure: false,
+        ws: true, // <--- Important: Enables WebSocket proxying
+      },
     },
   },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-  },
-  // Environment variable prefix
   envPrefix: 'VITE_',
 });

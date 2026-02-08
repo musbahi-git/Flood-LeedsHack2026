@@ -8,13 +8,23 @@
     "test": "jest"
   },
   "dependencies": {
+<<<<<<< HEAD
+=======
+    "@turf/turf": "^7.3.4",
+>>>>>>> e068d99a13e91ca23e1276c8fe261a34f5f89d67
     "axios": "^1.7.0",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.19.0",
     "mongoose": "^8.22.1",
+<<<<<<< HEAD
     "socket.io": "^4.7.5",
     "unzipper": "^0.12.3"
+=======
+    "ngraph.graph": "^20.1.1",
+    "ngraph.path": "^1.6.1",
+    "socket.io": "^4.7.5"
+>>>>>>> e068d99a13e91ca23e1276c8fe261a34f5f89d67
   },
   "devDependencies": {
     "jest": "^29.7.0",
