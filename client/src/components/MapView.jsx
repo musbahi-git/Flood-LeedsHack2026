@@ -304,7 +304,7 @@ function MapView({
       })}
 
       {/* Render shelter markers */}
-      {shelters.map((shelter) => {
+      {(Array.isArray(shelters) ? shelters : []).map((shelter) => {
         let lat, lon;
         if (shelter.location?.coordinates) {
           [lon, lat] = shelter.location.coordinates;

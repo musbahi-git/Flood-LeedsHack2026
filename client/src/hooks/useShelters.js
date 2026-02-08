@@ -14,7 +14,7 @@ export function useShelters() {
     try {
       const data = await getShelters();
       if (isMountedRef.current) {
-        setShelters(data);
+        setShelters(Array.isArray(data) ? data : []);
       }
     } catch (err) {
       console.error('[useShelters] Failed to fetch:', err);
