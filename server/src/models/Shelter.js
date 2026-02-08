@@ -7,6 +7,11 @@ const mongoose = require('mongoose');
  * @typedef {Object} Shelter
  * @property {string} name - Name of the shelter
  * @property {Object} location - GeoJSON Point with coordinates [lon, lat]
+ * @property {string} address - Physical address
+ * @property {number} capacity - Maximum capacity
+ * @property {number} currentOccupancy - Current number of people
+ * @property {Array<string>} amenities - Available amenities
+ * @property {boolean} isActive - Whether shelter is currently accepting people
  */
 
 const shelterSchema = new mongoose.Schema({
@@ -24,6 +29,29 @@ const shelterSchema = new mongoose.Schema({
       type: [Number], // [longitude, latitude]
       required: true,
     },
+  },
+  address: {
+    type: String,
+    default: '',
+  },
+  capacity: {
+    type: Number,
+    default: 100,
+    min: 0,
+  },
+  currentOccupancy: {
+    type: Number,
+    default: 0,
+    min: 0,
+  },
+  amenities: {
+    type: [String],
+    default: [],
+    // Examples: 'water', 'food', 'medical', 'charging', 'beds', 'wifi', 'showers'
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
   },
 });
 
