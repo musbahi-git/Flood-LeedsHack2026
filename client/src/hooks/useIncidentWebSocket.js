@@ -1,3 +1,4 @@
+
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 
@@ -8,12 +9,16 @@ import { io } from 'socket.io-client';
  */
 export function useIncidentWebSocket(onNewIncident) {
   useEffect(() => {
-    // Use VITE_API_URL as base, but replace /api with '' for socket.io
-    let baseUrl = '';
-    if (typeof process !== 'undefined' && process.env?.VITE_API_URL) {
-      baseUrl = process.env.VITE_API_URL;
-    }
+    // Use Vite env variable for API URL
+    let baseUrl = import.meta.env.VITE_API_URL || '/';
+    // Remove trailing /api for socket.io
     if (baseUrl.endsWith('/api')) baseUrl = baseUrl.replace(/\/api$/, '');
+
+    // Ensure protocol matches deployment
+    // If deployed on Railway, use https/wss
+    // If local, use http/ws
+    // socket.io-client will handle ws/wss automatically based on baseUrl
+
     const socket = io(baseUrl, {
       transports: ['websocket'],
       withCredentials: true,
