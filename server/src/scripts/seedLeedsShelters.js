@@ -16,7 +16,7 @@ const shelters = [
   },
   {
     name: 'Leeds Arena',
-    location: { type: 'Point', coordinates: [-1.5480, 53.7889] },
+    location: { type: 'Point', coordinates: [-1.548, 53.7889] },
     address: 'Claypit Lane, Leeds LS2 8BY',
     capacity: 500,
     currentOccupancy: 120,
@@ -116,4 +116,7 @@ async function seed() {
   }
 }
 
-seed();
+// Prefer top-level await
+(async () => {
+  await seed();
+})();

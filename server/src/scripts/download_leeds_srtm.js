@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const https = require('https');
+const fs = require('node:fs');
+const path = require('node:path');
+const https = require('node:https');
 const unzipper = require('unzipper');
 
 // Leeds SRTM tile (approximate, 53N 1W)
@@ -23,7 +23,7 @@ function unzip(zipPath, outDir, cb) {
     .on('close', cb);
 }
 
-if (!fs.existsSync(path.join(OUT_DIR, TIF_NAME))) {
+if (fs.existsSync(path.join(OUT_DIR, TIF_NAME)) === false) {
   console.log('Downloading SRTM tile for Leeds...');
   download(SRTM_URL, ZIP_PATH, () => {
     console.log('Unzipping...');

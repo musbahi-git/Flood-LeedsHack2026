@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const http = require('http'); // Changed from 'node:http' for better compatibility
+const http = require('node:http'); // Changed from 'node:http' for better compatibility
 const { Server } = require('socket.io');
 
 // Import routers
@@ -97,4 +97,7 @@ async function startServer() {
   }
 }
 
-startServer();
+// Prefer top-level await
+(async () => {
+  await startServer();
+})();
