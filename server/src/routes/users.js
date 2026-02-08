@@ -8,7 +8,7 @@ router.post('/location', async (req, res) => {
   try {
     const { userId, lat, lon } = req.body;
     
-    if (!userId || !lat || !lon) {
+    if (!userId || lat == null || lon == null) {
       return res.status(400).json({ error: 'userId, lat, and lon are required' });
     }
 
