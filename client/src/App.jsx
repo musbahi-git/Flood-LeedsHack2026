@@ -1,12 +1,22 @@
 // ...existing code...
 function App() {
   // ...existing code...
-  // Log navigation and view rendering
-  useEffect(() => {
-    console.log('[App] Rendering view:', activeView);
-  }, [activeView]);
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import LearningPanel from './components/LearningPanel';
+import { requestNotificationPermission, showNotification } from './utils/notifications';
+import MapView from './components/MapView';
+import ReportModal from './components/ReportModal';
+import SafeRoutePanel from './components/SafeRoutePanel';
+import IncidentList from './components/IncidentList';
+import { ReportIcon, RouteIcon, ListIcon, LocationIcon } from './components/Icons';
+import { useIncidents } from './hooks/useIncidents';
+import { useShelters } from './hooks/useShelters';
+import { useIncidentWebSocket } from './hooks/useIncidentWebSocket';
+import { useUserLocation } from './hooks/useUserLocation';
+import { createIncident } from './api/incidentsApi';
+import { getSafeRoute } from './api/routesApi';
+import { getOrCreateUserId } from './utils/userId';
 
 // ErrorBoundary to catch runtime errors and display them
 class ErrorBoundary extends React.Component {
@@ -31,20 +41,6 @@ class ErrorBoundary extends React.Component {
 ErrorBoundary.propTypes = {
   children: PropTypes.node
 };
-import LearningPanel from './components/LearningPanel';
-import { requestNotificationPermission, showNotification } from './utils/notifications';
-import MapView from './components/MapView';
-import ReportModal from './components/ReportModal';
-import SafeRoutePanel from './components/SafeRoutePanel';
-import IncidentList from './components/IncidentList';
-import { ReportIcon, RouteIcon, ListIcon, LocationIcon } from './components/Icons';
-import { useIncidents } from './hooks/useIncidents';
-import { useShelters } from './hooks/useShelters';
-import { useIncidentWebSocket } from './hooks/useIncidentWebSocket';
-import { useUserLocation } from './hooks/useUserLocation';
-import { createIncident } from './api/incidentsApi';
-import { getSafeRoute } from './api/routesApi';
-import { getOrCreateUserId } from './utils/userId';
 
 // Get or create anonymous user ID for this device
 const userId = getOrCreateUserId();
