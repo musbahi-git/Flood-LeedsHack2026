@@ -314,15 +314,10 @@ function MapView({
           >
             <Popup>
               <div className="shelter-popup">
-<<<<<<< HEAD
                 <strong>🏠 {shelter.name}</strong>
                 <p>{shelter.address}</p>
                 <p><b>Capacity:</b> {shelter.capacity} | <b>Current:</b> {shelter.currentOccupancy}</p>
                 <p><b>Amenities:</b> {Array.isArray(shelter.amenities) ? shelter.amenities.join(', ') : 'N/A'}</p>
-=======
-                <strong>{shelter.name}</strong>
-                <p>Safe shelter location</p>
->>>>>>> 7d105110c1f02163573aac64f6c6c22090995776
               </div>
             </Popup>
           </Marker>
