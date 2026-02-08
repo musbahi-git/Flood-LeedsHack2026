@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { requestNotificationPermission, showNotification } from './utils/notifications';
 import MapView from './components/MapView';
 import ReportModal from './components/ReportModal';
 import SafeRoutePanel from './components/SafeRoutePanel';
@@ -38,6 +39,13 @@ function App() {
     if (wsNotifTimeout.current) clearTimeout(wsNotifTimeout.current);
     // Auto-hide notification after 5s
     wsNotifTimeout.current = setTimeout(() => setWsNotification(null), 5000);
+
+    // Show device notification if permission granted
+    showNotification(notification, {
+      body: incident?.description || '',
+      icon: '/icons/icon-192.png',
+      tag: 'haven-incident',
+    });
   });
   const { location: userLocation, loading: locationLoading, requestLocation } = useUserLocation();
 
@@ -66,6 +74,9 @@ function App() {
 
   // PWA install prompt handling
   useEffect(() => {
+    // Prompt for notification permission on first load
+    requestNotificationPermission();
+
     const handleBeforeInstallPrompt = (e) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
@@ -163,7 +174,7 @@ function App() {
     <div className="app">
       {/* WebSocket notification banner */}
       {wsNotification && (
-        <div className={`ws-notification ws-notification-${wsNotifType || 'default'}`}>
+        <div className={`ws-notification ws-notification-${wsNotifType || 'default'}`} role="alert" aria-live="assertive">
           <span>{wsNotification}</span>
         </div>
       )}

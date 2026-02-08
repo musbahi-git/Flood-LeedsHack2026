@@ -21,10 +21,14 @@ export function useIncidentWebSocket(onNewIncident) {
 
     const socket = io(baseUrl, {
       transports: ['websocket'],
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 2000,
     });
 
     socket.on('connect', () => {
       // Connected
+      socket.emit('subscribe', 'incidents');
     });
 
     socket.on('new-incident', (data) => {
@@ -33,6 +37,7 @@ export function useIncidentWebSocket(onNewIncident) {
 
     socket.on('disconnect', () => {
       // Disconnected
+      // Attempt reconnection handled by socket.io
     });
 
     return () => {

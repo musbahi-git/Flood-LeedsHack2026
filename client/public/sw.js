@@ -59,3 +59,16 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+
+// Push notification event handler
+self.addEventListener('push', function(event) {
+  const data = event.data ? event.data.json() : {};
+  const title = data.title || 'Haven Alert';
+  const options = {
+    body: data.body || '',
+    icon: '/icons/icon-192.png',
+    tag: 'haven-incident',
+  };
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+});
