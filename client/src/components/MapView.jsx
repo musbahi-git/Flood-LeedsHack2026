@@ -201,7 +201,7 @@ function MapView({
         <GeoJSON data={historicalFloodZones} style={{
           color: '#f59e42',
           fillColor: '#f59e42',
-          fillOpacity: 0.10,
+                fillOpacity: '0.1',
           weight: 1,
           dashArray: '8, 4',
         }} />
