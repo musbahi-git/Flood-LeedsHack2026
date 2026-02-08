@@ -21,7 +21,6 @@ export function useIncidentWebSocket(onNewIncident) {
 
     const socket = io(baseUrl, {
       transports: ['websocket'],
-      withCredentials: true,
     });
 
     socket.on('connect', () => {
