@@ -72,7 +72,7 @@ function App() {
     // Show device notification if permission granted
     showNotification(notification, {
       body: incident?.description || '',
-      icon: '/icons/icon-192.png',
+      icon: '/icons/icon-192.svg',
       tag: 'haven-incident',
     });
   });

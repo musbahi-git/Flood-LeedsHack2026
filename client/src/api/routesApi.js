@@ -30,7 +30,7 @@ const createMockRoute = (origin) => {
   return {
     routes: [
       {
-        id: 0,
+        id: 'mock-0',
         coordinates: [
           { lat: origin.lat, lon: origin.lon },
           { lat: origin.lat + latStep, lon: origin.lon + lonStep + 0.002 }, // slight detour
@@ -43,7 +43,7 @@ const createMockRoute = (origin) => {
         duration: 15, // minutes
       },
     ],
-    chosenRouteId: 0,
+    chosenRouteId: 'mock-0',
     explanation: "🛡️ This route avoids 2 reported flood incidents on Main Street and takes you via higher ground through the park. Estimated walk time: 15 minutes. The shelter at Leeds City Hall has confirmed availability.",
     shelter: {
       id: 'shelter-1',
