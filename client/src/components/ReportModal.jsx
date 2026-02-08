@@ -1,9 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  IncidentIcon,
+  NeedHelpIcon,
+  CanHelpIcon,
+  FloodIcon,
+  LocationIcon,
+  PowerIcon,
+  TravelIcon,
+  MedicalIcon,
+  SuppliesIcon,
+  OtherIcon,
+  ChevronDownIcon,
+} from './Icons';
+
+const categories = [
+  { value: 'flood', label: 'Flood / Water', Icon: FloodIcon },
+  { value: 'power', label: 'Power Outage', Icon: PowerIcon },
+  { value: 'travel', label: 'Road / Travel Issue', Icon: TravelIcon },
+  { value: 'medical', label: 'Medical', Icon: MedicalIcon },
+  { value: 'supplies', label: 'Supplies Needed', Icon: SuppliesIcon },
+  { value: 'other', label: 'Other', Icon: OtherIcon },
+];
 
 /**
  * ReportModal Component
  * Controlled modal for creating a new incident/help request.
- * 
+ *
  * Props:
  * - isOpen: boolean - whether modal is visible
  * - onClose(): close the modal
@@ -22,6 +44,19 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+  const [categoryOpen, setCategoryOpen] = useState(false);
+  const categoryRef = useRef(null);
+
+  // Close category dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (categoryRef.current && !categoryRef.current.contains(e.target)) {
+        setCategoryOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Update location when currentLocation or clickedLocation changes
   useEffect(() => {
@@ -40,11 +75,12 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
     }
   }, [currentLocation, clickedLocation]);
 
-// Reset form when modal opens
+  // Reset form when modal opens
   useEffect(() => {
     if (isOpen) {
       setErrors({});
       setSubmitError(null);
+      setCategoryOpen(false);
       // Reset and pre-fill location
       if (clickedLocation) {
         setFormData({
@@ -88,15 +124,15 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
 
   const validate = () => {
     const newErrors = {};
-    
+
     if (!formData.type) {
       newErrors.type = 'Please select a type';
     }
-    
+
     if (!formData.description || formData.description.trim().length < 5) {
       newErrors.description = 'Please provide a description (at least 5 characters)';
     }
-    
+
     if (!formData.lat || !formData.lon) {
       newErrors.location = 'Please provide a location';
     } else {
@@ -115,7 +151,7 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validate()) {
       return;
     }
@@ -155,14 +191,15 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
   if (!isOpen) return null;
 
   const hasLocation = formData.lat && formData.lon;
+  const selectedCategory = categories.find(c => c.value === formData.category) || categories[0];
 
   return (
     <div className="modal-overlay" onClick={handleClose}>
       <div className="modal report-modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>📝 Report</h2>
-          <button 
-            className="modal-close" 
+          <h2>Report</h2>
+          <button
+            className="modal-close"
             onClick={handleClose}
             disabled={submitting}
             aria-label="Close"
@@ -170,16 +207,16 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
             ×
           </button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="report-form">
           {/* Type Selection */}
           <div className="form-group">
-            <label htmlFor="type">What are you reporting?</label>
+            <label>What are you reporting?</label>
             <div className="type-buttons">
               {[
-                { value: 'incident', label: '🚨 Incident', desc: 'Report a hazard' },
-                { value: 'need_help', label: '🆘 Need Help', desc: 'Request assistance' },
-                { value: 'can_help', label: '🤝 Can Help', desc: 'Offer assistance' },
+                { value: 'incident', icon: <IncidentIcon />, label: 'Incident', desc: 'Report a hazard' },
+                { value: 'need_help', icon: <NeedHelpIcon />, label: 'Need Help', desc: 'Request assistance' },
+                { value: 'can_help', icon: <CanHelpIcon />, label: 'Can Help', desc: 'Offer assistance' },
               ].map((option) => (
                 <button
                   key={option.value}
@@ -187,6 +224,7 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
                   className={`type-btn ${formData.type === option.value ? 'active' : ''}`}
                   onClick={() => handleChange({ target: { name: 'type', value: option.value } })}
                 >
+                  <span className="type-btn-icon">{option.icon}</span>
                   <span className="type-btn-label">{option.label}</span>
                   <span className="type-btn-desc">{option.desc}</span>
                 </button>
@@ -195,23 +233,42 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
             {errors.type && <p className="error">{errors.type}</p>}
           </div>
 
-          {/* Category Selection */}
+          {/* Category Selection - Custom Dropdown */}
           <div className="form-group">
-            <label htmlFor="category">Category</label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="form-select"
-            >
-              <option value="flood">🌊 Flood / Water</option>
-              <option value="power">⚡ Power Outage</option>
-              <option value="travel">🚗 Road / Travel Issue</option>
-              <option value="medical">🏥 Medical</option>
-              <option value="supplies">📦 Supplies Needed</option>
-              <option value="other">📋 Other</option>
-            </select>
+            <label>Category</label>
+            <div className="custom-select" ref={categoryRef}>
+              <button
+                type="button"
+                className={`custom-select-trigger ${categoryOpen ? 'open' : ''}`}
+                onClick={() => setCategoryOpen(!categoryOpen)}
+              >
+                <span className="custom-select-icon">
+                  <selectedCategory.Icon size={18} />
+                </span>
+                <span className="custom-select-label">{selectedCategory.label}</span>
+                <ChevronDownIcon size={16} />
+              </button>
+              {categoryOpen && (
+                <div className="custom-select-dropdown">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.value}
+                      type="button"
+                      className={`custom-select-option ${formData.category === cat.value ? 'active' : ''}`}
+                      onClick={() => {
+                        handleChange({ target: { name: 'category', value: cat.value } });
+                        setCategoryOpen(false);
+                      }}
+                    >
+                      <span className="custom-select-icon">
+                        <cat.Icon size={18} />
+                      </span>
+                      <span>{cat.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Description */}
@@ -235,7 +292,7 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
             <div className="location-section">
               {hasLocation ? (
                 <div className="location-display">
-                  <span className="location-icon">📍</span>
+                  <span className="location-icon"><LocationIcon size={18} /></span>
                   <span className="location-coords">
                     {parseFloat(formData.lat).toFixed(4)}, {parseFloat(formData.lon).toFixed(4)}
                   </span>
@@ -252,7 +309,7 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
                   <p>No location set</p>
                 </div>
               )}
-              
+
               <div className="location-actions">
                 {currentLocation && (
                   <button
@@ -260,12 +317,12 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
                     className="btn btn-outline btn-small"
                     onClick={handleUseMyLocation}
                   >
-                    📍 Use My Location
+                    <LocationIcon size={16} /> Use My Location
                   </button>
                 )}
                 <span className="location-hint">or tap on the map</span>
               </div>
-              
+
               {/* Hidden inputs for lat/lon */}
               <input type="hidden" name="lat" value={formData.lat} />
               <input type="hidden" name="lon" value={formData.lon} />
@@ -276,26 +333,26 @@ function ReportModal({ isOpen, onClose, onSubmit, currentLocation, clickedLocati
           {/* Submit Error */}
           {submitError && (
             <div className="submit-error">
-              <p>⚠️ {submitError}</p>
+              <p>{submitError}</p>
             </div>
           )}
 
           {/* Actions */}
           <div className="form-actions">
-            <button 
-              type="button" 
-              className="btn btn-ghost" 
+            <button
+              type="button"
+              className="btn btn-ghost"
               onClick={handleClose}
               disabled={submitting}
             >
               Cancel
             </button>
-            <button 
-              type="submit" 
+            <button
+              type="submit"
               className="btn btn-primary"
               disabled={submitting}
             >
-              {submitting ? '⏳ Submitting...' : '✓ Submit Report'}
+              {submitting ? 'Submitting...' : 'Submit Report'}
             </button>
           </div>
         </form>
