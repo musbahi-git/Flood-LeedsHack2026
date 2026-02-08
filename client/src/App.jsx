@@ -205,14 +205,20 @@ function App() {
             </button>
             <button
               className={"btn btn-small btn-primary" + (activeView === 'learn' ? ' active' : '')}
-              onClick={() => setActiveView('learn')}
+              onClick={() => {
+                console.log('[Menu] Learn button clicked');
+                setActiveView('learn');
+              }}
               aria-label="Show learning panel"
             >
               📚 Learn
             </button>
             <button
               className={"btn btn-small btn-ghost" + (activeView === 'map' ? ' active' : '')}
-              onClick={() => setActiveView('map')}
+              onClick={() => {
+                console.log('[Menu] Map button clicked');
+                setActiveView('map');
+              }}
               aria-label="Show map view"
             >
               🗺️ Map
@@ -233,7 +239,10 @@ function App() {
           currentUserId={userId}
         />
       ) : (
-        <LearningPanel />
+        <>
+          {console.log('[App] Rendering LearningPanel, activeView:', activeView)}
+          <LearningPanel />
+        </>
       )}
 
       {/* Floating action buttons (only show on map view) */}

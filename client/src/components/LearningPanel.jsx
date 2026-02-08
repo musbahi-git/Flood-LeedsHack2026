@@ -5,6 +5,11 @@ import "../styles/main.css";
 const LearningPanel = () => {
   // Debug: Log learningResources
   console.log('[LearningPanel] learningResources:', learningResources);
+  if (!learningResources) {
+    console.log('[LearningPanel] learningResources is undefined or null!');
+  } else if (!learningResources.length) {
+    console.log('[LearningPanel] learningResources is empty array!');
+  }
   if (!learningResources || !learningResources.length) {
     return (
       <div className="learning-panel">
