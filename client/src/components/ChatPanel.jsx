@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 const WS_URL = window.location.hostname === 'localhost'
   ? 'ws://localhost:3001/chat'
-  : `wss://${window.location.hostname}/chat`;
+  : 'wss://affectionate-flexibility-production.up.railway.app/chat';
 
 const ChatPanel = () => {
   const [messages, setMessages] = useState([]);
