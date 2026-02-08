@@ -130,8 +130,8 @@ router.post('/', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('[routesSafe] Error:', err);
-    res.status(500).json({ error: "Server error" });
+    console.error('[routesSafe] Error:', err.message, err.stack);
+    res.status(500).json({ error: err.message || "Server error" });
   }
 });
 

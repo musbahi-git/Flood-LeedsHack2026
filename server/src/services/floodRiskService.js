@@ -7,7 +7,7 @@
 
 const fs = require('node:fs');
 const path = require('node:path');
-const booleanPointInPolygon = require('@turf/boolean-point-in-polygon');
+const { booleanPointInPolygon } = require('@turf/boolean-point-in-polygon');
 
 let floodZones = null;
 let historicalFloodZones = null;
