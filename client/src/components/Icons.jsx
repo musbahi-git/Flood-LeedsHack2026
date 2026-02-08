@@ -185,3 +185,47 @@ export function ChevronDownIcon({ size = 16 }) {
     </svg>
   );
 }
+
+export function MapIcon({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 6L9 4L15 6L21 4V18L15 20L9 18L3 20V6Z" />
+      <path d="M9 4V18" />
+      <path d="M15 6V20" />
+    </svg>
+  );
+}
+
+export function LearnIcon({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 3L2 8.5L12 14L22 8.5L12 3Z" />
+      <path d="M5 10.5V16.5C5 16.5 8 19 12 19C16 19 19 16.5 19 16.5V10.5" />
+      <path d="M22 8.5V15" />
+    </svg>
+  );
+}
+
+export function SunIcon({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+      <circle cx="12" cy="12" r="4.5" />
+      <path d="M12 2V4.5" />
+      <path d="M12 19.5V22" />
+      <path d="M4.93 4.93L6.7 6.7" />
+      <path d="M17.3 17.3L19.07 19.07" />
+      <path d="M2 12H4.5" />
+      <path d="M19.5 12H22" />
+      <path d="M4.93 19.07L6.7 17.3" />
+      <path d="M17.3 6.7L19.07 4.93" />
+    </svg>
+  );
+}
+
+export function MoonIcon({ size = 20 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3A7 7 0 0 0 21 12.79Z" />
+    </svg>
+  );
+}

@@ -6,7 +6,7 @@ import MapView from './components/MapView';
 import ReportModal from './components/ReportModal';
 import SafeRoutePanel from './components/SafeRoutePanel';
 import IncidentList from './components/IncidentList';
-import { ReportIcon, RouteIcon, ListIcon, LocationIcon } from './components/Icons';
+import { ReportIcon, RouteIcon, ListIcon, LocationIcon, MapIcon, LearnIcon, SunIcon, MoonIcon } from './components/Icons';
 import { useIncidents } from './hooks/useIncidents';
 import { useShelters } from './hooks/useShelters';
 import { useIncidentWebSocket } from './hooks/useIncidentWebSocket';
@@ -79,20 +79,6 @@ function App() {
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [showIncidentList, setShowIncidentList] = useState(false);
   const [activeView, setActiveView] = useState('map');
-  // Debug: Log activeView changes
-  useEffect(() => {
-    console.log('[App] activeView:', activeView);
-  }, [activeView]);
-
-  // Log button clicks
-  const handleLearnClick = () => {
-    console.log('[App] Learn button clicked, switching to learn view');
-    setActiveView('learn');
-  };
-  const handleMapClickButton = () => {
-    console.log('[App] Map button clicked, switching to map view');
-    setActiveView('map');
-  };
   const [darkMode, setDarkMode] = useState(false);
 
   // PWA install prompt state
@@ -162,7 +148,6 @@ function App() {
       throw err; // Let modal handle the error display
     }
   };
-  // ...existing code...
 
   // Handle safe route request
   const handleRequestRoute = async () => {
@@ -227,49 +212,37 @@ function App() {
       )}
       {/* Header */}
       <header className="app-header">
-        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%'}}>
-          <div>
-            <h1 className="app-title">Haven</h1>
-            <span className="app-tagline">Community Safety Map</span>
-          </div>
-          <div className="app-menu">
-            <button className="btn btn-small btn-ghost" onClick={() => { console.log('[App] Dark mode button clicked'); setDarkMode(dm => !dm); }}>
-              {darkMode ? '☀️ Light' : '🌙 Dark'}
-            </button>
-            <button
-              className={"btn btn-small btn-primary" + (activeView === 'learn' ? ' active' : '')}
-              onClick={() => {
-                console.log('[App] Learn button click, switching to learn view');
-                handleLearnClick();
-              }}
-              aria-label="Show learning panel"
-            >
-              📚 Learn
-            </button>
-            <button
-              className={"btn btn-small btn-ghost" + (activeView === 'map' ? ' active' : '')}
-              onClick={() => {
-                console.log('[App] Map button click, switching to map view');
-                handleMapClickButton();
-              }}
-              aria-label="Show map view"
-            >
-              🗺️ Map
-            </button>
-          </div>
-        </div>
+        <h1 className="app-title">Haven</h1>
+
+        <nav className="nav-tabs">
+          <button
+            className={"nav-tab" + (activeView === 'map' ? ' nav-tab-active' : '')}
+            onClick={() => setActiveView('map')}
+            aria-label="Show map view"
+          >
+            <MapIcon size={16} />
+            <span>Map</span>
+          </button>
+          <button
+            className={"nav-tab" + (activeView === 'learn' ? ' nav-tab-active' : '')}
+            onClick={() => setActiveView('learn')}
+            aria-label="Show learning panel"
+          >
+            <LearnIcon size={16} />
+            <span>Learn</span>
+          </button>
+        </nav>
+
+        <button
+          className="theme-toggle"
+          onClick={() => setDarkMode(dm => !dm)}
+          aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+        >
+          {darkMode ? <SunIcon size={18} /> : <MoonIcon size={18} />}
+        </button>
       </header>
 
       {/* Main content: Map or LearningPanel */}
-      {/* Logging view rendering outside JSX */}
-      {(() => {
-        if (activeView === 'map') {
-          console.log('[App] Rendering MapView, activeView:', activeView);
-        } else {
-          console.log('[App] Rendering LearningPanel, activeView:', activeView);
-        }
-        return null;
-      })()}
       {activeView === 'map' ? (
         <MapView
           incidents={incidents}
@@ -279,6 +252,7 @@ function App() {
           shelters={shelters}
           onMapClick={handleMapClick}
           currentUserId={userId}
+          darkMode={darkMode}
         />
       ) : (
         <LearningPanel />
