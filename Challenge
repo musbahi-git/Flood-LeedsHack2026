@@ -1,0 +1,95 @@
+   CHALLENGE ALIGNMENT
+This project is eligible for multiple Leeds Hack 2026 challenges.  
+Each section below explains **what problem is solved, how it is solved, and why the solution matters.
+
+_____________________________________________________________________________________________________
+
+1️⃣ Overall Challenge — Systems Rebooted
+
+WHAT problem does this solve?
+Flood emergency response systems are currently:
+- fragmented across multiple platforms
+- reactive rather than predictive
+- difficult for individuals to act on under pressure
+
+People receive alerts, but no clear guidance on what action to take.
+
+HOW does HAVEN solve it?
+HAVEN reboots flood response as a single end-to-end system by:
+
+- ingesting official flood alerts and live weather data
+- learning from historical flood extents
+- calculating safe evacuation routes, not just shortest routes
+- displaying open shelters with live capacity
+- enabling community reports and help requests
+- dynamically rerouting users as conditions change
+
+All routing decisions are deterministic and explainable, not black-box.
+
+WHY this is a rebooted system
+Instead of placing responsibility on individuals to interpret warnings,  
+HAVEN turns information into action.
+
+It transforms flood response from:
+> “Here is a warning”  
+to  
+> “Here is your safest route right now, and here’s why.”
+
+This directly embodies the Systems Rebooted theme.
+
+_______________________________________________________________________________________________________
+
+ 2️⃣ PwC Challenge — Rewiring Communities: Connecting People Better
+
+WHAT community problem does this address?
+During floods:
+- people don’t know which routes are safe
+- shelters are difficult to find
+- official data often lags real conditions
+- communities struggle to coordinate help
+
+This leads to panic, misinformation, and isolation.
+
+HOW does HAVEN rewire communities?
+HAVEN enables real-time community coordination by:
+
+- sharing safe evacuation routes
+- making shelters visible as community hubs
+- allowing residents to report flooded roads
+- enabling help requests for vulnerable users
+- giving authorities real-time ground truth
+
+The system supports peer-to-peer intelligence, not just one-way alerts.
+
+WHY this fits the PwC challenge
+The PwC challenge values:
+- reduced friction in accessing help
+- peer-to-peer support
+- trust and transparency
+- speed and robustness
+
+FloodSafe Leeds addresses all of these by design, making it a strong fit.
+
+________________________________________________________________________________________________________________________________________
+
+3️⃣ Parallax Challenge — Use the Past to Predict the Future
+
+WHAT is being predicted?
+HAVEN predicts which road segments are likely to become unsafe during flooding — even before official closures occur.
+
+HOW is prediction achieved?
+The system combines historical and live datasets at road-segment level:
+
+- historic flood extent polygons
+- altitude and terrain slope
+- distance to rivers and drainage
+- rainfall accumulation (past 1–24 hours)
+- current rainfall intensity
+- short-term rainfall forecasts
+
+These features generate a risk score that penalises flood-prone routes during routing.
+
+
+
+aWHY this fits Parallax
+This is **multivariate forecasting** using historical data,weather data, measured rainfall to anticipate future risk, exactly matching the Parallax challenge focus.
