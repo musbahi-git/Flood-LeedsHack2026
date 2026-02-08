@@ -1,0 +1,22 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "Leeds Historical Flood Zone",
+        "risk": "medium"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.555, 53.798],
+          [-1.545, 53.798],
+          [-1.545, 53.802],
+          [-1.555, 53.802],
+          [-1.555, 53.798]
+        ]]
+      }
+    }
+  ]
+}

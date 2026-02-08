@@ -11,6 +11,8 @@ const incidentsRouter = require('./routes/incidents');
 const sheltersRouter = require('./routes/shelters');
 const routesSafeRouter = require('./routes/routesSafe'); // Ensure this file exists
 const usersRouter = require('./routes/users');
+
+const floodZonesRouter = require('./routes/floodZones');
 const Shelter = require('./models/Shelter');
 
 const app = express();
@@ -28,10 +30,12 @@ app.use(express.json());
 
 // --- Mount Routers ---
 // This connects your "Safe Route" button to the routesSafe.js file
+
 app.use('/api/incidents', incidentsRouter);
 app.use('/api/shelters', sheltersRouter);
 app.use('/api/routes/safe', routesSafeRouter); 
 app.use('/api/users', usersRouter);
+app.use('/api', floodZonesRouter);
 
 // --- Health Check ---
 app.get('/api/health', (req, res) => {
