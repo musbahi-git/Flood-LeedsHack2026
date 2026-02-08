@@ -63,13 +63,12 @@ router.post('/', async (req, res) => {
     if (activeIncidents.length > 0) {
       console.log(`⚠️ Processing ${activeIncidents.length} active incidents...`);
       
-      // For every incident, find nearby road nodes and mark them as DANGEROUS
       activeIncidents.forEach(inc => {
         const [iLon, iLat] = inc.location.coordinates;
         
         // Scan spatial index for nodes close to this incident
         spatialIndex.forEach(node => {
-          if (Math.abs(node.lat - iLat) > 0.005) return; // Optimization: skip far nodes
+          if (Math.abs(node.lat - iLat) > 0.005) return; 
           if (Math.abs(node.lon - iLon) > 0.005) return;
 
           const dist = haversineDistance(iLat, iLon, node.lat, node.lon);
@@ -80,7 +79,6 @@ router.post('/', async (req, res) => {
       });
       console.log(`🚫 Blocked ${dangerNodes.size} road nodes due to flooding.`);
     }
-    // -----------------------------------
 
     // 4. A* Search with Penalties
     const pathFinder = path.aStar(graph, {
@@ -90,8 +88,7 @@ router.post('/', async (req, res) => {
         // RULE 1: Avoid Tunnels
         if (link.data.isTunnel) cost *= 10;
 
-        // RULE 2: AVOID FLOOD ZONES (The Demo Feature)
-        // If either end of the road is in the Danger Set, make it impossible to pass
+        // RULE 2: AVOID FLOOD ZONES
         if (dangerNodes.has(from.id) || dangerNodes.has(to.id)) {
            return cost * 10000; // Virtually impossible cost
         }
@@ -108,7 +105,6 @@ router.post('/', async (req, res) => {
       return sendFallback(res, origin, destCoords, shelterDoc, "Route blocked by hazards.");
     }
 
-    // Check if we actually avoided a hazard (for the UI explanation)
     let explanation = "🛡️ Safe route calculated.";
     if (dangerNodes.size > 0) {
       explanation = "⚠️ Route altered to avoid reported flood incidents.";
