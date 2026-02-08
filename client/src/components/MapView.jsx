@@ -251,7 +251,7 @@ MapView.propTypes = {
       })}
 
       {/* Render incident markers */}
-      {incidents.map((incident) => {
+      {(Array.isArray(incidents) ? incidents : []).map((incident) => {
         // Handle different location formats
         let lat, lon;
         if (incident.location?.coordinates) {
