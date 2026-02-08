@@ -1,5 +1,5 @@
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
 /**
@@ -8,6 +8,13 @@ import { io } from 'socket.io-client';
  * @param {function} onNewIncident - Callback for new incident (incident, notification, type)
  */
 export function useIncidentWebSocket(onNewIncident) {
+  const callbackRef = useRef(onNewIncident);
+
+  // Keep ref up to date without triggering reconnection
+  useEffect(() => {
+    callbackRef.current = onNewIncident;
+  }, [onNewIncident]);
+
   useEffect(() => {
 
     // Helper to get API base URL in a Jest-safe way
@@ -29,7 +36,7 @@ export function useIncidentWebSocket(onNewIncident) {
     });
 
     socket.on('new-incident', (data) => {
-      if (onNewIncident) onNewIncident(data.incident, data.notification, data.type);
+      if (callbackRef.current) callbackRef.current(data.incident, data.notification, data.type);
     });
 
     socket.on('disconnect', () => {
@@ -40,5 +47,5 @@ export function useIncidentWebSocket(onNewIncident) {
     return () => {
       socket.disconnect();
     };
-  }, [onNewIncident]);
+  }, []);
 }
