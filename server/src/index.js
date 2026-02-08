@@ -58,6 +58,8 @@ app.get('/', (req, res) => res.json({ name: 'FloodSafe API', status: 'Running' }
 
 
 // --- Start Server Logic ---
+const { setupChatSocket } = require('./chatSocket');
+
 async function startServer() {
   try {
     console.log('Starting FloodSafe server...');
@@ -71,19 +73,21 @@ async function startServer() {
     // Create HTTP server
     const server = http.createServer(app);
     
-    // Setup Socket.IO
+
+    // Setup Socket.IO (existing)
     const io = new Server(server, {
       cors: {
         origin: "*", 
         methods: ["GET", "POST"]
       }
     });
-
     app.set('io', io);
-
     io.on('connection', (socket) => {
       console.log('Client connected:', socket.id);
     });
+
+    // Setup Chat WebSocket
+    setupChatSocket(server);
 
     // Start Listening
     server.listen(PORT, () => {

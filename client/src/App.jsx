@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import LearningPanel from './components/LearningPanel';
+import ChatPanel from './components/ChatPanel';
 import { requestNotificationPermission, showNotification } from './utils/notifications';
 import MapView from './components/MapView';
 import ReportModal from './components/ReportModal';
@@ -231,6 +232,14 @@ function App() {
             <LearnIcon size={16} />
             <span>Learn</span>
           </button>
+          <button
+            className={"nav-tab" + (activeView === 'chat' ? ' nav-tab-active' : '')}
+            onClick={() => setActiveView('chat')}
+            aria-label="Show local chat"
+          >
+            <span role="img" aria-label="Chat" style={{fontSize:'1.2rem'}}>💬</span>
+            <span>Chat</span>
+          </button>
         </nav>
 
         <button
@@ -242,7 +251,7 @@ function App() {
         </button>
       </header>
 
-      {/* Main content: Map or LearningPanel */}
+      {/* Main content: Map, LearningPanel, or ChatPanel */}
       {activeView === 'map' ? (
         <MapView
           incidents={incidents}
@@ -254,9 +263,11 @@ function App() {
           currentUserId={userId}
           darkMode={darkMode}
         />
-      ) : (
+      ) : activeView === 'learn' ? (
         <LearningPanel />
-      )}
+      ) : activeView === 'chat' ? (
+        <ChatPanel />
+      ) : null}
 
       {/* Floating action buttons (only show on map view) */}
       {activeView === 'map' && (
