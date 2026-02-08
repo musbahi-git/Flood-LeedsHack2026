@@ -49,6 +49,8 @@ const userId = getOrCreateUserId();
  * Community incident map with AI-guided safe routing.
  */
 function App() {
+  // Flood risk alert state
+  const [showFloodAlert, setShowFloodAlert] = useState(true);
   // Data hooks
   const { incidents, loading: incidentsLoading, error: incidentsError, refresh } = useIncidents();
   const { shelters } = useShelters();
@@ -205,6 +207,47 @@ function App() {
   return (
     <ErrorBoundary>
     <div className={"app" + (darkMode ? " dark" : "") }>
+      {/* Flood Risk Alert Overlay */}
+      {showFloodAlert && (
+        <div style={{
+          position:'fixed',
+          top:0,
+          left:0,
+          width:'100vw',
+          height:'100vh',
+          zIndex:1000,
+          background:'rgba(255,0,0,0.08)',
+          pointerEvents:'auto',
+          boxShadow:'0 0 0 8px rgba(255,0,0,0.15) inset, 0 0 32px 8px rgba(255,0,0,0.25)',
+        }}>
+          <div style={{
+            position:'absolute',
+            top:'32px',
+            left:'50%',
+            transform:'translateX(-50%)',
+            background:'#fff',
+            border:'2px solid #dc2626',
+            borderRadius:'16px',
+            boxShadow:'0 4px 24px #dc2626',
+            padding:'32px 24px',
+            maxWidth:'420px',
+            textAlign:'center',
+            zIndex:1001
+          }}>
+            <div style={{fontSize:'2.5rem',color:'#dc2626',marginBottom:'12px'}}>🌊</div>
+            <h2 style={{color:'#dc2626',fontWeight:'bold',marginBottom:'8px'}}>Major Flood Risk Alert</h2>
+            <p style={{color:'#b91c1c',fontSize:'1.1rem',marginBottom:'16px'}}>Severe flood risk is active in Leeds. Please avoid low-lying areas, follow official guidance, and check safe routes before traveling.</p>
+            <button style={{background:'#dc2626',color:'#fff',border:'none',borderRadius:'8px',padding:'12px 32px',fontWeight:'bold',fontSize:'1rem',boxShadow:'0 2px 8px #dc2626',cursor:'pointer'}} onClick={()=>setShowFloodAlert(false)}>Dismiss</button>
+          </div>
+          {/* Red corner shadow overlay */}
+          <div style={{position:'absolute',top:0,left:0,width:'100vw',height:'100vh',pointerEvents:'none'}}>
+            <div style={{position:'absolute',top:0,left:0,width:'120px',height:'120px',background:'radial-gradient(circle at top left, #dc2626 60%, transparent 100%)',zIndex:1002}}></div>
+            <div style={{position:'absolute',top:0,right:0,width:'120px',height:'120px',background:'radial-gradient(circle at top right, #dc2626 60%, transparent 100%)',zIndex:1002}}></div>
+            <div style={{position:'absolute',bottom:0,left:0,width:'120px',height:'120px',background:'radial-gradient(circle at bottom left, #dc2626 60%, transparent 100%)',zIndex:1002}}></div>
+            <div style={{position:'absolute',bottom:0,right:0,width:'120px',height:'120px',background:'radial-gradient(circle at bottom right, #dc2626 60%, transparent 100%)',zIndex:1002}}></div>
+          </div>
+        </div>
+      )}
       {/* WebSocket notification banner */}
       {wsNotification && (
         <div className={`ws-notification ws-notification-${wsNotifType || 'default'}`} role="alert" aria-live="assertive">
