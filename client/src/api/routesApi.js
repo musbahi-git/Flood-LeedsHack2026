@@ -7,10 +7,7 @@ import axios from 'axios';
 const USE_MOCK_API = false;
 
 // API base URL - works with Vite, Jest, and Vercel
-const API_BASE =
-  typeof process !== 'undefined' && process.env?.VITE_API_URL
-    ? process.env.VITE_API_URL
-    : '/api';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 // ============================================
 // MOCK DATA
