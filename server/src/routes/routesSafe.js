@@ -1,24 +1,12 @@
 const express = require('express');
-<<<<<<< HEAD
-const { chooseBestRouteAndShelter } = require('../services/routing/routingService');
-
-const { FloodRiskService, ElevationService } = require('../services');
-const routingApi = require('../services/routingApi');
-const incidentService = require('../services/incidentService');
-const shelterService = require('../services/shelterService');
-
-=======
->>>>>>> e068d99a13e91ca23e1276c8fe261a34f5f89d67
 const router = express.Router();
 const Shelter = require('../models/Shelter');
+const Incident = require('../models/Incident'); // Import Incident Model
 const path = require('ngraph.path');
 const { buildRoadGraph, findNearestNodeInComponent } = require('../utils/graphBuilder');
 const { haversineDistance } = require('../utils/geo');
 
-<<<<<<< HEAD
-const floodRiskService = new FloodRiskService();
-const elevationService = new ElevationService();
-=======
+// Helper to find nearest shelter
 async function findNearestShelter(origin) {
   return Shelter.findOne({
     location: {
@@ -28,29 +16,9 @@ async function findNearestShelter(origin) {
     },
   });
 }
->>>>>>> e068d99a13e91ca23e1276c8fe261a34f5f89d67
 
 router.post('/', async (req, res) => {
-  const { origin, mode } = req.body;
-  if (!origin?.lat || !origin?.lon) {
-    return res.status(400).json({ error: 'origin with lat and lon required' });
-  }
   try {
-<<<<<<< HEAD
-    // TODO: Replace the following with your actual service instances
-    const ctx = {
-      routingApi,
-      incidentService,
-      floodRiskService,
-      elevationService,
-      shelterService,
-    };
-    const result = await chooseBestRouteAndShelter(origin, mode || 'normal', ctx);
-    res.json(result);
-  } catch (err) {
-    console.error('[routesSafe] Error:', err);
-    res.status(500).json({ error: 'Failed to compute safe route', details: err.message });
-=======
     const { origin, destination } = req.body;
     console.log(`🗺️ Route Request: ${origin.lat},${origin.lon}`);
 
@@ -62,7 +30,7 @@ router.post('/', async (req, res) => {
     } else {
       shelterDoc = await findNearestShelter(origin);
       if (!shelterDoc) {
-        destCoords = { lat: 53.8008, lon: -1.5491 }; // Fallback
+        destCoords = { lat: 53.8008, lon: -1.5491 }; 
       } else {
         destCoords = { 
           lat: shelterDoc.location.coordinates[1], 
@@ -71,30 +39,60 @@ router.post('/', async (req, res) => {
       }
     }
 
-    // 2. Get Graph & Main Component
+    // 2. Get Graph
     const { graph, spatialIndex, largestComponent } = buildRoadGraph();
 
-    // 3. Snap to MAIN NETWORK (The Fix)
-    // This finds the closest node that is GUARANTEED to be connected to the city
+    // 3. Snap to Network
     const startNode = findNearestNodeInComponent(origin.lat, origin.lon, spatialIndex, largestComponent);
     const endNode = findNearestNodeInComponent(destCoords.lat, destCoords.lon, spatialIndex, largestComponent);
 
-    // Logging for verification
-    if (startNode) console.log(`📍 Start snapped to Main Network (${startNode.dist.toFixed(0)}m away)`);
-    else console.warn(`❌ Start point too far from any main road.`);
-    
-    if (endNode) console.log(`📍 End snapped to Main Network (${endNode.dist.toFixed(0)}m away)`);
-
-    // Safety Check
     if (!startNode || !endNode) {
       return sendFallback(res, origin, destCoords, shelterDoc, "Location outside supported road network.");
     }
 
-    // 4. Run A* (Single run, no loops needed now!)
+    // --- NEW: DYNAMIC HAZARD LOADING ---
+    // Fetch incidents from the last 24 hours
+    const activeIncidents = await Incident.find({
+      createdAt: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) }
+    });
+
+    // Create a "Danger Set" of blocked Node IDs
+    const dangerNodes = new Set();
+    const DANGER_RADIUS = 150; // Meters around an incident to block
+
+    if (activeIncidents.length > 0) {
+      console.log(`⚠️ Processing ${activeIncidents.length} active incidents...`);
+      
+      activeIncidents.forEach(inc => {
+        const [iLon, iLat] = inc.location.coordinates;
+        
+        // Scan spatial index for nodes close to this incident
+        spatialIndex.forEach(node => {
+          if (Math.abs(node.lat - iLat) > 0.005) return; 
+          if (Math.abs(node.lon - iLon) > 0.005) return;
+
+          const dist = haversineDistance(iLat, iLon, node.lat, node.lon);
+          if (dist < DANGER_RADIUS) {
+            dangerNodes.add(node.id);
+          }
+        });
+      });
+      console.log(`🚫 Blocked ${dangerNodes.size} road nodes due to flooding.`);
+    }
+
+    // 4. A* Search with Penalties
     const pathFinder = path.aStar(graph, {
       distance: (from, to, link) => {
         let cost = link.data.distance;
+
+        // RULE 1: Avoid Tunnels
         if (link.data.isTunnel) cost *= 10;
+
+        // RULE 2: AVOID FLOOD ZONES
+        if (dangerNodes.has(from.id) || dangerNodes.has(to.id)) {
+           return cost * 10000; // Virtually impossible cost
+        }
+
         return cost;
       },
       heuristic: (from, to) => haversineDistance(from.data.lat, from.data.lon, to.data.lat, to.data.lon)
@@ -102,17 +100,16 @@ router.post('/', async (req, res) => {
 
     const foundPath = pathFinder.find(startNode.id, endNode.id);
 
-    // 5. Handle Result
+    // 5. Response
     if (foundPath.length === 0) {
-      // This should theoretically never happen if start/end are in the same component,
-      // but we keep it for 100% crash safety.
-      console.warn("⚠️ A* failed inside connected component (Rare).");
-      return sendFallback(res, origin, destCoords, shelterDoc, "Complex pathing error.");
+      return sendFallback(res, origin, destCoords, shelterDoc, "Route blocked by hazards.");
     }
 
-    console.log(`✅ Path found: ${foundPath.length} nodes.`);
+    let explanation = "🛡️ Safe route calculated.";
+    if (dangerNodes.size > 0) {
+      explanation = "⚠️ Route altered to avoid reported flood incidents.";
+    }
 
-    // Extract coordinates (No reverse needed for ngraph)
     const coordinates = foundPath.map(n => ({ 
       lat: n.data.lat, 
       lon: n.data.lon 
@@ -121,14 +118,13 @@ router.post('/', async (req, res) => {
     res.json({
       routes: [{ id: 'safe-1', coordinates, dangerScore: 0.1 }],
       chosenRouteId: 'safe-1',
-      explanation: "🛡️ Safe route calculated using connected Main Road Network.",
+      explanation: explanation,
       shelter: shelterDoc
     });
 
   } catch (err) {
     console.error('[routesSafe] Error:', err);
     res.status(500).json({ error: "Server error" });
->>>>>>> e068d99a13e91ca23e1276c8fe261a34f5f89d67
   }
 });
 
@@ -140,7 +136,7 @@ function sendFallback(res, origin, dest, shelter, reason) {
       dangerScore: 0.5 
     }],
     chosenRouteId: 'fallback-direct',
-    explanation: `⚠️ ${reason} Showing direct line.`,
+    explanation: `⚠️ ${reason}`,
     shelter: shelter
   });
 }
