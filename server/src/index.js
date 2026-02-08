@@ -21,6 +21,16 @@ app.use(cors({
   ],
   credentials: true
 }));
+    credentials: true
+    }));
+    app.use(cors({
+      origin: [
+        'https://haven-leeds-hack2026-g9ul4rxc2-musbahi.vercel.app', // Actual Vercel domain
+        'https://affectionate-flexibility-production.up.railway.app', // Railway backend public domain
+        'http://localhost:5173', // Local dev
+      ],
+      credentials: true
+    }));
 app.use(express.json());
 
 // Mount routers
@@ -63,7 +73,8 @@ async function startServer() {
     const io = new Server(server, {
       cors: {
         origin: [
-          'https://haven-leeds-hack2026-701sbhuwd-musbahi.vercel.app',
+          'https://haven-leeds-hack2026-g9ul4rxc2-musbahi.vercel.app',
+          'https://affectionate-flexibility-production.up.railway.app',
           'http://localhost:5173',
         ],
         credentials: true
