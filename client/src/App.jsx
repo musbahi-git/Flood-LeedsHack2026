@@ -85,9 +85,6 @@ function App() {
   // Handle PWA install
   const handleInstallClick = async () => {
     if (!deferredPrompt) return;
-
-    import LearningPanel from './components/LearningPanel';
-    import './styles/learning.css';
     // Show the install prompt
     deferredPrompt.prompt();
 
@@ -112,7 +109,7 @@ function App() {
       throw err; // Let modal handle the error display
     }
   };
-      const [activeView, setActiveView] = useState("map");
+  // ...existing code...
 
   // Handle safe route request
   const handleRequestRoute = async () => {
