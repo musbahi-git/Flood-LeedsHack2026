@@ -6,6 +6,7 @@ const router = express.Router();
 router.get('/flood_zones', (req, res) => {
   const filePath = path.join(__dirname, '../data/flood_zones.geojson');
   console.log('Serving flood_zones.geojson:', filePath);
+  res.setHeader('Content-Type', 'application/json');
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error('Error serving flood_zones.geojson:', err);
@@ -18,6 +19,7 @@ router.get('/flood_zones', (req, res) => {
 router.get('/historical_flood_zones', (req, res) => {
   const filePath = path.join(__dirname, '../data/historical_flood_zones.geojson');
   console.log('Serving historical_flood_zones.geojson:', filePath);
+  res.setHeader('Content-Type', 'application/json');
   res.sendFile(filePath, (err) => {
     if (err) {
       console.error('Error serving historical_flood_zones.geojson:', err);
