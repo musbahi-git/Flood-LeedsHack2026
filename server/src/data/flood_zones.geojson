@@ -1,4 +1,22 @@
 {
   "type": "FeatureCollection",
-  "features": []
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "Leeds City Centre Flood Zone",
+        "risk": "high"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.553, 53.799],
+          [-1.547, 53.799],
+          [-1.547, 53.803],
+          [-1.553, 53.803],
+          [-1.553, 53.799]
+        ]]
+      }
+    }
+  ]
 }
