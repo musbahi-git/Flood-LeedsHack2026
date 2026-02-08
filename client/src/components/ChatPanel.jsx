@@ -31,7 +31,11 @@ const ChatPanel = () => {
     };
     ws.current.onmessage = (event) => {
       const msg = JSON.parse(event.data);
-      setMessages((prev) => [...prev, msg]);
+      if (msg.type === 'history' && Array.isArray(msg.messages)) {
+        setMessages(msg.messages);
+      } else if (msg.type !== 'error') {
+        setMessages((prev) => [...prev, msg]);
+      }
     };
     ws.current.onclose = () => {
       console.log('[ChatPanel] WebSocket disconnected');
@@ -48,6 +52,7 @@ const ChatPanel = () => {
   const sendMessage = (e) => {
     e.preventDefault();
     if (!input.trim()) return;
+    if (!ws.current || ws.current.readyState !== WebSocket.OPEN) return;
     const msg = { user: 'Anonymous', text: input.trim(), time: new Date().toLocaleTimeString() };
     ws.current.send(JSON.stringify(msg));
     setInput('');
