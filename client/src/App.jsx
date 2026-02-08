@@ -1,3 +1,6 @@
+// ...existing code...
+function App() {
+  // ...existing code...
   // Log navigation and view rendering
   useEffect(() => {
     console.log('[App] Rendering view:', activeView);
