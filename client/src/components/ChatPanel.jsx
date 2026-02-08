@@ -1,9 +1,22 @@
 import React, { useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 
-const WS_URL = window.location.hostname === 'localhost'
-  ? 'ws://localhost:3001/chat'
-  : 'wss://affectionate-flexibility-production.up.railway.app/chat';
+
+// Helper to get WebSocket base URL from env
+function getWsBase() {
+  // Use VITE_API_URL if set, else fallback to current origin
+  let base = import.meta.env.VITE_API_URL || window.location.origin;
+  // Ensure no trailing slash
+  base = base.replace(/\/$/, '');
+  // Use ws/wss protocol
+  if (base.startsWith('http://')) return 'ws://' + base.slice(7) + '/chat';
+  if (base.startsWith('https://')) return 'wss://' + base.slice(8) + '/chat';
+  // If already ws/wss
+  if (base.startsWith('ws://') || base.startsWith('wss://')) return base + '/chat';
+  // Fallback
+  return 'ws://' + base + '/chat';
+}
+const WS_URL = getWsBase();
 
 const ChatPanel = () => {
   const [messages, setMessages] = useState([]);

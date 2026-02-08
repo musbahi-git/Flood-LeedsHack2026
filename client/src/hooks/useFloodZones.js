@@ -3,12 +3,8 @@ import { useEffect, useState } from 'react';
 
 // Helper to get API base URL in a Jest-safe way
 function getApiBase() {
-  // Use process.env in test, otherwise '/api' (Vite will replace in build)
-  if (typeof process !== 'undefined' && process.env && process.env.JEST_WORKER_ID) {
-    return process.env.VITE_API_URL || '/api';
-  }
-  // In Vite, import.meta.env.VITE_API_URL will be replaced at build time
-  return '/api';
+  // Use VITE_API_URL if set, else fallback to '/api'
+  return (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
 }
 
 

@@ -11,22 +11,10 @@ export function useIncidentWebSocket(onNewIncident) {
   useEffect(() => {
 
     // Helper to get API base URL in a Jest-safe way
-    function getApiBase() {
-      if (typeof process !== 'undefined' && process.env && process.env.JEST_WORKER_ID) {
-        return process.env.VITE_API_URL || '/';
-      }
-      // In Vite, import.meta.env.VITE_API_URL will be replaced at build time
-      return '/';
-    }
-
-    let baseUrl = getApiBase();
+    // Use VITE_API_URL if set, else fallback to current origin
+    let baseUrl = import.meta.env.VITE_API_URL || window.location.origin;
     // Remove trailing /api for socket.io
     if (baseUrl.endsWith('/api')) baseUrl = baseUrl.replace(/\/api$/, '');
-
-    // Ensure protocol matches deployment
-    // If deployed on Railway, use https/wss
-    // If local, use http/ws
-    // socket.io-client will handle ws/wss automatically based on baseUrl
 
     const socket = io(baseUrl, {
       transports: ['websocket'],
