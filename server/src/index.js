@@ -1,17 +1,15 @@
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./config/db');
-const http = require('node:http');
+const http = require('http'); // Changed from 'node:http' for better compatibility
 const { Server } = require('socket.io');
 
 // Import routers
 const incidentsRouter = require('./routes/incidents');
 const sheltersRouter = require('./routes/shelters');
-const routesSafeRouter = require('./routes/routesSafe'); // Ensure this file exists
+const routesSafeRouter = require('./routes/routesSafe'); 
 const usersRouter = require('./routes/users');
-
 const floodZonesRouter = require('./routes/floodZones');
 const Shelter = require('./models/Shelter');
 
@@ -20,67 +18,77 @@ const PORT = process.env.PORT || 3000;
 
 // --- Middleware ---
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://haven-leeds-hack2026.vercel.app'
-  ],
+  origin: true, // Allow all origins for the demo to prevent CORS errors
   credentials: true
 }));
 app.use(express.json());
 
-// --- Mount Routers ---
-// This connects your "Safe Route" button to the routesSafe.js file
+// --- DEBUG LOGGER (See exactly what is being requested) ---
+app.use((req, res, next) => {
+  console.log(`📡 Incoming Request: ${req.method} ${req.url}`);
+  next();
+});
 
+// --- MOUNT ROUTERS (The Fix) ---
+// We mount these on TWO paths so both /api/... and /... work perfectly.
+
+// 1. Safe Routes
+app.use('/routes/safe', routesSafeRouter);      // Matches frontend
+app.use('/api/routes/safe', routesSafeRouter);  // Backup
+
+// 2. Incidents
+app.use('/incidents', incidentsRouter);
 app.use('/api/incidents', incidentsRouter);
+
+// 3. Shelters
+app.use('/shelters', sheltersRouter);
 app.use('/api/shelters', sheltersRouter);
-app.use('/api/routes/safe', routesSafeRouter); 
+
+// 4. Users
+app.use('/users', usersRouter);
 app.use('/api/users', usersRouter);
-app.use('/api', floodZonesRouter);
+
+// 5. Flood Zones
+app.use('/', floodZonesRouter);     // For base paths
+app.use('/api', floodZonesRouter);  // For api paths
 
 // --- Health Check ---
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
-});
+app.get('/health', (req, res) => res.json({ status: 'ok' }));
+app.get('/', (req, res) => res.json({ name: 'FloodSafe API', status: 'Running' }));
 
-app.get('/', (req, res) => {
-  res.json({ name: 'FloodSafe API', status: 'Running' });
-});
 
-// --- Auto-Seed Logic ---
-async function autoSeedShelters() {
-  const count = await Shelter.countDocuments();
-  if (count === 0) {
-    // ... (Your shelter data here is fine, keeping it brief for readability) ...
-    console.log(`Auto-seeded shelters.`);
-  }
-}
-
-// --- Start Server ---
+// --- Start Server Logic ---
 async function startServer() {
   try {
     console.log('Starting FloodSafe server...');
-    await connectDB();
-    console.log('MongoDB connected.');
     
-    await autoSeedShelters();
+    // Connect to DB
+    if (connectDB) {
+        await connectDB(); 
+        console.log('MongoDB connected.');
+    }
 
-    // Create HTTP server and Socket.IO
+    // Create HTTP server
     const server = http.createServer(app);
+    
+    // Setup Socket.IO
     const io = new Server(server, {
       cors: {
-        origin: ['http://localhost:5173', 'https://haven-leeds-hack2026.vercel.app'],
-        credentials: true
+        origin: "*", 
+        methods: ["GET", "POST"]
       }
     });
 
-    app.set('io', io); // Allow routes to use WebSocket
+    app.set('io', io);
 
     io.on('connection', (socket) => {
       console.log('Client connected:', socket.id);
     });
 
+    // Start Listening
     server.listen(PORT, () => {
-      console.log(`FloodSafe server running on port ${PORT}`);
+      console.log(`🚀 Server running on port ${PORT}`);
+      console.log(`   - Try: http://localhost:${PORT}/routes/safe`);
     });
 
   } catch (error) {
