@@ -17,6 +17,40 @@
           [-1.555, 53.798]
         ]]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "Armley Historical Flood Zone",
+        "risk": "low"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.600, 53.795],
+          [-1.590, 53.795],
+          [-1.590, 53.800],
+          [-1.600, 53.800],
+          [-1.600, 53.795]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "Headingley Historical Flood Zone",
+        "risk": "high"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.580, 53.820],
+          [-1.570, 53.820],
+          [-1.570, 53.825],
+          [-1.580, 53.825],
+          [-1.580, 53.820]
+        ]]
+      }
     }
   ]
 }

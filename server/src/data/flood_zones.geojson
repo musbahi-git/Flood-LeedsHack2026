@@ -17,6 +17,40 @@
           [-1.553, 53.799]
         ]]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "Kirkstall Flood Zone",
+        "risk": "medium"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.600, 53.810],
+          [-1.590, 53.810],
+          [-1.590, 53.815],
+          [-1.600, 53.815],
+          [-1.600, 53.810]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "zone": "Holbeck Flood Zone",
+        "risk": "low"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-1.565, 53.785],
+          [-1.555, 53.785],
+          [-1.555, 53.790],
+          [-1.565, 53.790],
+          [-1.565, 53.785]
+        ]]
+      }
     }
   ]
 }
