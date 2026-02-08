@@ -10,6 +10,7 @@ const incidentsRouter = require('./routes/incidents');
 const sheltersRouter = require('./routes/shelters');
 const routesSafeRouter = require('./routes/routesSafe'); 
 const usersRouter = require('./routes/users');
+const pushRouter = require('./routes/push');
 const floodZonesRouter = require('./routes/floodZones');
 const Shelter = require('./models/Shelter');
 
@@ -47,6 +48,10 @@ app.use('/api/shelters', sheltersRouter);
 // 4. Users
 app.use('/users', usersRouter);
 app.use('/api/users', usersRouter);
+
+// 6. Push Notifications
+app.use('/push', pushRouter);
+app.use('/api/push', pushRouter);
 
 // 5. Flood Zones
 app.use('/', floodZonesRouter);     // For base paths

@@ -108,6 +108,11 @@ function App() {
     // Prompt for notification permission on first load
     requestNotificationPermission();
 
+    // Subscribe to push notifications (if supported)
+    import('./utils/push').then(({ subscribeUserToPush }) => {
+      subscribeUserToPush();
+    });
+
     const handleBeforeInstallPrompt = (e) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
