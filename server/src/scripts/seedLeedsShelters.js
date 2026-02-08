@@ -97,10 +97,12 @@ const shelters = [
   },
 ];
 
-async function seed() {
+async function seedLeedsShelters(calledFromServer = false) {
   try {
-    await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected to MongoDB');
+    if (!calledFromServer) {
+      await mongoose.connect(process.env.MONGODB_URI);
+      console.log('Connected to MongoDB');
+    }
 
     // Clear existing shelters
     await Shelter.deleteMany();
@@ -109,14 +111,21 @@ async function seed() {
     // Insert real Leeds shelters
     await Shelter.insertMany(shelters);
     console.log(`Seeded ${shelters.length} Leeds shelters successfully`);
-    process.exit(0);
+
+    if (!calledFromServer) {
+      process.exit(0);
+    }
   } catch (error) {
     console.error('Seed error:', error);
-    process.exit(1);
+    if (!calledFromServer) {
+      process.exit(1);
+    }
   }
 }
 
-// Prefer top-level await
-(async () => {
-  await seed();
-})();
+// If run directly, seed
+if (require.main === module) {
+  seedLeedsShelters();
+}
+
+module.exports = seedLeedsShelters;

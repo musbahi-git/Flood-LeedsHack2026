@@ -69,10 +69,23 @@ async function startServer() {
   try {
     console.log('Starting FloodSafe server...');
     
+
     // Connect to DB
     if (connectDB) {
         await connectDB(); 
         console.log('MongoDB connected.');
+    }
+
+    // --- Auto-seed Leeds Shelters if empty ---
+    try {
+      const shelterCount = await Shelter.countDocuments();
+      if (shelterCount === 0) {
+        console.log('[Seeder] No shelters found, seeding Leeds shelters...');
+        const seedLeedsShelters = require('./scripts/seedLeedsShelters.js');
+        await seedLeedsShelters(true); // true = called from server
+      }
+    } catch (err) {
+      console.error('[Seeder] Error during auto-seed:', err);
     }
 
     // Create HTTP server
