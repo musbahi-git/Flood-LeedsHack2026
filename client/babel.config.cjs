@@ -11,4 +11,15 @@ module.exports = {
     ],
     '@babel/preset-react',
   ],
+  plugins: [
+    [
+      'babel-plugin-transform-import-meta',
+      {
+        importStyle: 'base',
+        env: {
+          VITE_API_URL: ''
+        }
+      }
+    ]
+  ]
 };

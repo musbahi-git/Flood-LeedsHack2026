@@ -6,8 +6,17 @@ import axios from 'axios';
 // ============================================
 const USE_MOCK_API = false;
 
-// API base URL - works with Vite, Jest, and Vercel
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
+// Helper to get API base URL in a Jest-safe way
+function getApiBase() {
+  if (typeof process !== 'undefined' && process.env && process.env.JEST_WORKER_ID) {
+    return process.env.VITE_API_URL || '/api';
+  }
+  // In Vite, import.meta.env.VITE_API_URL will be replaced at build time
+  return '/api';
+}
+
+const API_BASE = getApiBase();
 
 // ============================================
 // MOCK DATA

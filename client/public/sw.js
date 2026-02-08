@@ -59,6 +59,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+
 // Push notification event handler
 self.addEventListener('push', function(event) {
   const data = event.data ? event.data.json() : {};
@@ -70,4 +71,11 @@ self.addEventListener('push', function(event) {
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
+
+// Support showing notifications via postMessage (for iOS and fallback)
+self.addEventListener('message', function(event) {
+  if (event.data && event.data.type === 'show-notification') {
+    const { title, options } = event.data;
+    self.registration.showNotification(title, options);
+  }
 });

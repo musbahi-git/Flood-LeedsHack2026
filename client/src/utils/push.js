@@ -1,10 +1,30 @@
 // push.js
 // Utility for subscribing to push notifications and sending test push
 
+
+function isIosSafari() {
+  const ua = window.navigator.userAgent;
+  return /iP(ad|hone|od)/.test(ua) && /Safari/.test(ua) && !/CriOS|FxiOS|OPiOS/.test(ua);
+}
+
+function isStandalonePWA() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+}
+
 export async function subscribeUserToPush() {
-  if (!('serviceWorker' in navigator)) return null;
+  if (!('serviceWorker' in navigator)) {
+    alert('Service workers are not supported in this browser.');
+    return null;
+  }
+  if (!('PushManager' in window)) {
+    alert('Push notifications are not supported in this browser.');
+    return null;
+  }
+  if (isIosSafari() && !isStandalonePWA()) {
+    alert('On iOS, push notifications only work after installing the app to your home screen. Tap Share > Add to Home Screen, then reopen the app.');
+    return null;
+  }
   const registration = await navigator.serviceWorker.ready;
-  if (!('PushManager' in window)) return null;
   try {
     const subscription = await registration.pushManager.subscribe({
       userVisibleOnly: true,
@@ -22,6 +42,11 @@ export async function subscribeUserToPush() {
     }
     return subscription;
   } catch (err) {
+    if (Notification.permission !== 'granted') {
+      alert('Please allow notifications to enable push alerts.');
+    } else {
+      alert('Failed to subscribe to push notifications. This browser or device may not support them.');
+    }
     console.error('Push subscription error:', err);
     return null;
   }

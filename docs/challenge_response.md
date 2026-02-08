@@ -1,5 +1,5 @@
-Frontend: React (18.2.0), Vite (build tool), React-Leaflet/Leaflet (interactive map), Axios (API calls), Socket.io-client (real-time updates), Prop-types (type checking), uuid (unique IDs), Jest (testing), Babel (transpilation), ESBuild (bundling), Service Worker (PWA), CSS (styling).
-Backend: Node.js, Express, custom services for flood risk, routing, elevation, and incident management. Data stored in GeoJSON files and models (MongoDB or similar).
+Frontend: React (18.2.0), Vite (build tool), React-Leaflet/Leaflet (interactive map), Axios  in (API calls), Socket.io-client (real-time updates), Prop-types (type checking), uuid (unique IDs), Jest (testing), Babel (transpilation), ESBuild (bundling), Service Worker (PWA), CSS (styling).
+Backend: Node.js, Express, custom services for flood risk, routing, elevation, and incident management. Data stored in GeoJSON files and models (MongoDB
 Deployment: Vercel (frontend), Railway (backend).
 Algorithms:
 

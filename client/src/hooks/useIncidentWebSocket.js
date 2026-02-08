@@ -9,8 +9,17 @@ import { io } from 'socket.io-client';
  */
 export function useIncidentWebSocket(onNewIncident) {
   useEffect(() => {
-    // Use Vite env variable for API URL
-    let baseUrl = import.meta.env.VITE_API_URL || '/';
+
+    // Helper to get API base URL in a Jest-safe way
+    function getApiBase() {
+      if (typeof process !== 'undefined' && process.env && process.env.JEST_WORKER_ID) {
+        return process.env.VITE_API_URL || '/';
+      }
+      // In Vite, import.meta.env.VITE_API_URL will be replaced at build time
+      return '/';
+    }
+
+    let baseUrl = getApiBase();
     // Remove trailing /api for socket.io
     if (baseUrl.endsWith('/api')) baseUrl = baseUrl.replace(/\/api$/, '');
 
