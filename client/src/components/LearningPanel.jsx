@@ -58,22 +58,6 @@ const LearningPanel = () => {
     </div>
   );
 // ...existing code...
-            </ul>
-            {resource.externalLink && (
-              <a
-                className="learning-link"
-                href={resource.externalLink}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                More info
-              </a>
-            )}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
 };
 
 export default LearningPanel;
