@@ -53,7 +53,14 @@ function App() {
   // UI state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [showIncidentList, setShowIncidentList] = useState(false);
-  const [activeView, setActiveView] = useState('map'); // Default to map view
+  const [activeView, setActiveView] = useState(() => {
+    // Always default to map view unless explicitly overridden
+    return 'map';
+  });
+    // Debug: Log activeView
+    useEffect(() => {
+      console.log('[App] activeView:', activeView);
+    }, [activeView]);
   const [darkMode, setDarkMode] = useState(false);
 
   // PWA install prompt state
@@ -196,10 +203,18 @@ function App() {
             <button className="btn btn-small btn-ghost" onClick={() => setDarkMode(dm => !dm)}>
               {darkMode ? '☀️ Light' : '🌙 Dark'}
             </button>
-            <button className={"btn btn-small btn-primary" + (activeView === 'learn' ? ' active' : '')} onClick={() => setActiveView('learn')}>
+            <button
+              className={"btn btn-small btn-primary" + (activeView === 'learn' ? ' active' : '')}
+              onClick={() => setActiveView('learn')}
+              aria-label="Show learning panel"
+            >
               📚 Learn
             </button>
-            <button className={"btn btn-small btn-ghost" + (activeView === 'map' ? ' active' : '')} onClick={() => setActiveView('map')}>
+            <button
+              className={"btn btn-small btn-ghost" + (activeView === 'map' ? ' active' : '')}
+              onClick={() => setActiveView('map')}
+              aria-label="Show map view"
+            >
               🗺️ Map
             </button>
           </div>
