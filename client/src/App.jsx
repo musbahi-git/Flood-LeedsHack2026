@@ -3,7 +3,9 @@ import MapView from './components/MapView';
 import ReportModal from './components/ReportModal';
 import SafeRoutePanel from './components/SafeRoutePanel';
 import IncidentList from './components/IncidentList';
+import { ReportIcon, RouteIcon, ListIcon, LocationIcon } from './components/Icons';
 import { useIncidents } from './hooks/useIncidents';
+import { useShelters } from './hooks/useShelters';
 import { useIncidentWebSocket } from './hooks/useIncidentWebSocket';
 import { useUserLocation } from './hooks/useUserLocation';
 import { createIncident } from './api/incidentsApi';
@@ -15,12 +17,13 @@ const userId = getOrCreateUserId();
 
 /**
  * Haven - Main App Component
- * 
+ *
  * Community incident map with AI-guided safe routing.
  */
 function App() {
   // Data hooks
   const { incidents, loading: incidentsLoading, error: incidentsError, refresh } = useIncidents();
+  const { shelters } = useShelters();
 
   // Notification state
   const [wsNotification, setWsNotification] = useState(null);
@@ -160,53 +163,54 @@ function App() {
     <div className="app">
       {/* WebSocket notification banner */}
       {wsNotification && (
-        <div className={`ws-notification ws-notification-${wsNotifType || 'default'}`} style={{position:'fixed',top:0,left:0,right:0,zIndex:1000,background:'#222',color:'#fff',padding:'12px',textAlign:'center',fontWeight:'bold'}}>
+        <div className={`ws-notification ws-notification-${wsNotifType || 'default'}`}>
           <span>{wsNotification}</span>
         </div>
       )}
       {/* Header */}
       <header className="app-header">
-        <h1 className="app-title">🏠 Haven</h1>
+        <h1 className="app-title">Haven</h1>
         <span className="app-tagline">Community Safety Map</span>
       </header>
 
       {/* Map fills the viewport */}
-      <MapView 
+      <MapView
         incidents={incidents}
         routes={routes}
         chosenRouteId={chosenRouteId}
         userLocation={userLocation}
+        shelters={shelters}
         onMapClick={handleMapClick}
         currentUserId={userId}
       />
 
       {/* Floating action buttons */}
       <div className="floating-actions">
-        <button 
+        <button
           className="fab fab-report"
           onClick={handleOpenReport}
           title="Report incident or request help"
         >
-          <span className="fab-icon">📍</span>
+          <span className="fab-icon"><ReportIcon size={18} /></span>
           <span className="fab-label">Report</span>
         </button>
-        
-        <button 
+
+        <button
           className="fab fab-route"
           onClick={handleRequestRoute}
           disabled={routeLoading}
           title="Find safe route to shelter"
         >
-          <span className="fab-icon">{routeLoading ? '⏳' : '🛤️'}</span>
+          <span className="fab-icon"><RouteIcon size={18} /></span>
           <span className="fab-label">{routeLoading ? 'Finding...' : 'Safe Route'}</span>
         </button>
 
-        <button 
+        <button
           className="fab fab-list"
           onClick={() => setShowIncidentList(!showIncidentList)}
           title="View incident list"
         >
-          <span className="fab-icon">📋</span>
+          <span className="fab-icon"><ListIcon size={18} /></span>
           <span className="fab-label">List</span>
         </button>
       </div>
@@ -239,9 +243,9 @@ function App() {
 
       {/* Incident List (debug/overview) */}
       {showIncidentList && (
-        <IncidentList 
-          incidents={incidents} 
-          loading={incidentsLoading} 
+        <IncidentList
+          incidents={incidents}
+          loading={incidentsLoading}
           error={incidentsError}
           onClose={() => setShowIncidentList(false)}
         />
@@ -250,20 +254,21 @@ function App() {
       {/* Location status indicator */}
       {userLocation && (
         <div className="location-indicator">
-          📍 Location active
+          <LocationIcon size={14} />
+          Location active
         </div>
       )}
 
       {/* PWA Install Banner */}
       {showInstallBanner && (
         <div className="install-banner">
-          <span className="install-text">📲 Install Haven for quick access</span>
+          <span className="install-text">Install Haven for quick access</span>
           <div className="install-actions">
             <button className="btn btn-small btn-primary" onClick={handleInstallClick}>
               Install
             </button>
-            <button 
-              className="btn btn-small btn-ghost" 
+            <button
+              className="btn btn-small btn-ghost"
               onClick={() => setShowInstallBanner(false)}
             >
               Later
