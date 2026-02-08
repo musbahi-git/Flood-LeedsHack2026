@@ -78,14 +78,16 @@ function App() {
   // UI state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [showIncidentList, setShowIncidentList] = useState(false);
-  const [activeView, setActiveView] = useState(() => {
-    // Always default to map view unless explicitly overridden
-    return 'map';
-  });
-    // Debug: Log activeView
-    useEffect(() => {
-      console.log('[App] activeView:', activeView);
-    }, [activeView]);
+  const [activeView, setActiveView] = useState('map');
+  // Force reset to 'map' on every mount
+  useEffect(() => {
+    setActiveView('map');
+    console.log('[App] activeView (forced reset):', 'map');
+  }, []);
+  // Debug: Log activeView changes
+  useEffect(() => {
+    console.log('[App] activeView:', activeView);
+  }, [activeView]);
   const [darkMode, setDarkMode] = useState(false);
 
   // PWA install prompt state
