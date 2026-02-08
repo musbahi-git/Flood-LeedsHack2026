@@ -5,13 +5,12 @@ import L from 'leaflet';
 
 // ...existing icon and helper code...
 
+
 export function useFloodZones() {
   const [floodZones, setFloodZones] = useState(null);
   useEffect(() => {
-    const url =
-      window.location.hostname === 'haven-leeds-hack2026.vercel.app'
-        ? 'https://affectionate-flexibility-production.up.railway.app/api/flood_zones'
-        : '/api/flood_zones';
+    const apiBase = import.meta.env.VITE_API_URL || '';
+    const url = apiBase.replace(/\/$/, '') + '/flood_zones';
     fetch(url)
       .then(res => res.json())
       .then(setFloodZones)
@@ -20,13 +19,12 @@ export function useFloodZones() {
   return floodZones;
 }
 
+
 export function useHistoricalFloodZones() {
   const [historicalFloodZones, setHistoricalFloodZones] = useState(null);
   useEffect(() => {
-    const url =
-      window.location.hostname === 'haven-leeds-hack2026.vercel.app'
-        ? 'https://affectionate-flexibility-production.up.railway.app/api/historical_flood_zones'
-        : '/api/historical_flood_zones';
+    const apiBase = import.meta.env.VITE_API_URL || '';
+    const url = apiBase.replace(/\/$/, '') + '/historical_flood_zones';
     fetch(url)
       .then(res => res.json())
       .then(setHistoricalFloodZones)
