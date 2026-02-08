@@ -1,94 +1,148 @@
 <div align="center">
+  
+<br>
 
-# 🌊 Haven
+# H A V E N
 
-### Emergency Flood Response & Community Safety Platform
+**Emergency flood response, rebuilt from the ground up.**
 
-*From broadcast-only to peer-to-peer — a flood of information to save lives.*
+<br>
 
-[![Built at LeedsHack 2026](https://img.shields.io/badge/Built%20at-LeedsHack%202026-blue?style=for-the-badge&logo=hackclub&logoColor=white)](https://leedshack.com)
-[![Theme: Systems Rebooted](https://img.shields.io/badge/Theme-Systems%20Rebooted-orange?style=for-the-badge)](https://leedshack.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
+*When flash floods hit, official alert systems push information one way — slowly. Haven flips that model. It turns every person with a phone into both a sensor and a responder, creating a live, breathing picture of what's actually happening on the ground.*
+
+<br>
+
+`React` · `Node.js` · `Express` · `MongoDB Atlas` · `Gemini AI` · `Google Directions` · `UK Environment Agency API`
 
 ---
-
-**Haven reboots emergency incident response.** Instead of relying on top-down broadcast alerts, Haven empowers communities to share real-time flood reports, find AI-guided safe routes, and coordinate help — all from a single live map.
-
-[Features](#-features) · [Tech Stack](#-tech-stack) · [Getting Started](#-getting-started) · [Architecture](#-architecture) · [API Reference](#-api-reference) · [Team](#-team)
 
 </div>
 
----
+<br>
 
-## 💡 The Problem
+## The problem we're solving
 
-Flash floods kill people in the UK every year. When water levels rise, people don't know which roads are safe, where shelters are, or where their neighbours need help. Official alert systems are one-directional and slow. **The system is broken — we rebooted it.**
+People die in UK flash floods every year. Not because help doesn't exist, but because information doesn't flow fast enough. Roads flood in minutes. Official warnings arrive in hours. Residents have no way to tell each other which streets are passable, which shelters have space, or where someone needs help pulling sandbags.
 
-## ✨ Features
+The emergency broadcast system was designed for a different era. **We rebooted it.**
 
-### 🗺️ Live Incident Map
-Real-time community reporting on an interactive map. Report floods, road closures, power outages, and more — each pinned with GPS coordinates so everyone can see what's happening around them.
+<br>
 
-### 🆘 Help Coordination
-Users can drop **"I need help"** or **"I can help"** pins on the map, turning passive observers into an active response network. See who needs assistance and who's nearby to provide it.
+## What Haven does
 
-### 🛤️ AI-Powered Safe Routing
-Request a safe route to the nearest shelter. Haven pulls multiple route options from Google Directions, cross-references them against live UK Environment Agency flood data and community reports, then uses **Gemini AI** to select and explain the safest path.
+Haven is a live community map for flood emergencies. Open the app and you see what's happening around you — reported floods, blocked roads, power outages — all posted by real people in real time.
 
-### 🏛️ Shelter Finder
-Browse nearby emergency shelters with real-time capacity information. Know where to go — and whether there's room when you get there.
+**Report what you see.** Drop a pin when you spot flooding, a road closure, or a power outage. Your report instantly appears on everyone's map, tagged with GPS coordinates, a category, and a timestamp.
 
-### 📊 Categorised Reporting
-Incidents are tagged by category — flood, power outage, travel disruption, medical, supplies needed — making it easy to filter and prioritise during a crisis.
+**Ask for help. Offer help.** Post an "I need help" or "I can help" pin. Suddenly your neighbourhood isn't a collection of strangers — it's a response network.
 
----
+**Find a safe way out.** Hit the Safe Route button and Haven pulls multiple driving routes from Google Directions, cross-references them against live Environment Agency flood data and community reports, then asks Gemini AI to pick and explain the safest path to the nearest shelter.
 
-## 🛠️ Tech Stack
+**Know where to go.** Browse nearby emergency shelters with capacity information, so you don't arrive at a full building.
 
-<div align="center">
+<br>
 
-| Layer | Technology |
-|:---:|:---|
-| **Frontend** | React · Vite · Leaflet · OpenStreetMap |
-| **Backend** | Node.js · Express · Mongoose |
-| **Database** | MongoDB Atlas (Geospatial 2dsphere indexing) |
-| **AI** | Google Gemini API |
-| **Flood Data** | UK Environment Agency Real-Time Flood API |
+## How it's built
 
-</div>
+The frontend is a **React** app bundled with **Vite**, rendering an interactive **Leaflet** map on **OpenStreetMap** tiles. Users interact through a report modal, floating action buttons, and a route panel — all designed around the principle that in an emergency, every tap should count.
 
----
+The backend is **Node.js** with **Express**, connected to **MongoDB Atlas** with geospatial 2dsphere indexing. This means incident queries like "show me everything within 5km" resolve in milliseconds. The shelters endpoint serves capacity data from a curated dataset.
 
-## 🚀 Getting Started
+Safe routing is where it gets interesting. Rather than building a complex scoring algorithm from scratch, we take a smarter approach: fetch multiple route alternatives from **Google Directions**, pull real-time flood warnings from the **UK Environment Agency**, gather community-reported incidents from our own database, and hand the whole package to **Gemini AI** with a single question — *which route is safest, and why?* Gemini returns a chosen route and a plain-English explanation.
 
-### Prerequisites
+<br>
 
-- Node.js ≥ 18
-- npm
-- MongoDB Atlas account (free tier works)
-- API keys for Google Maps & Gemini
+## Architecture
 
-### Server
+```
+                        ┌─────────────────────────────┐
+                        │       React Frontend         │
+                        │   Leaflet · Report Flow · UI │
+                        └──────────────┬──────────────┘
+                                       │
+                                  REST / HTTP
+                                       │
+                        ┌──────────────▼──────────────┐
+                        │      Express API Server      │
+                        │                              │
+                        │   /api/incidents             │
+                        │   /api/shelters              │
+                        │   /api/routes/safe           │
+                        └───┬──────────┬──────────┬───┘
+                            │          │          │
+                     ┌──────▼───┐ ┌────▼────┐ ┌───▼──────────┐
+                     │ MongoDB  │ │ Gemini  │ │ External     │
+                     │  Atlas   │ │   AI    │ │ Google Dirs  │
+                     │          │ │         │ │ EA Flood API │
+                     └──────────┘ └─────────┘ └──────────────┘
+```
+
+<br>
+
+## API at a glance
+
+**Incidents** — the core of community reporting.
+
+```
+POST  /api/incidents          Create a report (incident, need_help, or can_help)
+GET   /api/incidents          Fetch reports — filter by location, radius, time, type, category
+```
+
+Post body expects `type`, `category`, `description`, `lat`, and `lon`. The GET endpoint supports query params for `lat`, `lon`, `radius` (in metres), `sinceMinutes`, `type`, and `category`.
+
+**Shelters** — where to go.
+
+```
+GET   /api/shelters           Returns all shelters with location and capacity
+```
+
+**Safe routing** — the AI-guided escape route.
+
+```
+POST  /api/routes/safe        Send your location, get back ranked routes with an AI explanation
+```
+
+Send `{ origin: { lat, lon } }` and receive `{ routes, chosenRouteId, explanation }`.
+
+<br>
+
+## Project structure
+
+```
+Haven/
+│
+├── client/
+│   └── src/
+│       ├── components/       MapView, ReportModal, SafeRoutePanel, IncidentList
+│       ├── hooks/            useIncidents, useUserLocation
+│       ├── api/              incidentsApi, routesApi
+│       └── styles/           main.css
+│
+├── server/
+│   └── src/
+│       ├── models/           Incident.js — Mongoose schema with 2dsphere index
+│       ├── routes/           incidents.js, shelters.js, routesSafe.js
+│       ├── data/             shelters.json, flood_zones.geojson
+│       └── server.js
+│
+└── docs/                     Architecture notes and team references
+```
+
+<br>
+
+## Running it locally
+
+**Server**
 
 ```bash
 cd server
 cp .env.example .env
-```
-
-Fill in your `.env`:
-```env
-MONGODB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/floodapp
-GEMINI_API_KEY=your_gemini_key
-GOOGLE_MAPS_API_KEY=your_google_maps_key
-PORT=5000
-```
-
-```bash
+# Add your MONGODB_URI, GEMINI_API_KEY, and GOOGLE_MAPS_API_KEY
 npm install
 npm run dev
 ```
 
-### Client
+**Client**
 
 ```bash
 cd client
@@ -96,140 +150,36 @@ npm install
 npm run dev
 ```
 
-The app will be running at `http://localhost:5173` with the API on `http://localhost:5000`.
+Frontend runs on `localhost:5173`, API on `localhost:5000`.
 
----
+<br>
 
-## 🏗️ Architecture
+## The team
 
-```
-┌─────────────────────────────────────────────────────┐
-│                    React Frontend                     │
-│         Leaflet Map · Report Flow · Route UI          │
-└──────────────────────┬──────────────────────────────┘
-                       │ HTTP / REST
-┌──────────────────────▼──────────────────────────────┐
-│                  Express API Server                    │
-│                                                       │
-│  /api/incidents   POST & GET incident reports         │
-│  /api/shelters    GET shelters with capacity           │
-│  /api/routes/safe POST → AI-guided safe routing       │
-└───────┬───────────────┬──────────────┬──────────────┘
-        │               │              │
-   ┌────▼────┐   ┌──────▼─────┐  ┌────▼──────────────┐
-   │ MongoDB │   │  Gemini AI │  │ External APIs      │
-   │  Atlas  │   │   (Route   │  │ · Google Directions│
-   │         │   │  Analysis) │  │ · EA Flood Data    │
-   └─────────┘   └────────────┘  └────────────────────┘
-```
+Three people built this in 21 hours at LeedsHack 2026:
 
----
+One handled the **Express API and MongoDB** — database design, geospatial queries, endpoint architecture, and integration testing. One owned the **React frontend** — the map interface, report flow, and user experience. One built the **AI routing pipeline** — connecting Gemini, Google Directions, and Environment Agency flood data into a single decision engine.
 
-## 📡 API Reference
+<br>
 
-### Incidents
+## Where this goes next
 
-| Method | Endpoint | Description |
-|:---|:---|:---|
-| `POST` | `/api/incidents` | Create a new incident report |
-| `GET` | `/api/incidents` | Retrieve incidents (with geo/time/type filters) |
+The 21-hour version is a foundation. The full vision includes flood prediction using historical data and ML, an authority dashboard with live user heatmaps, multi-language support through Gemini translation, push notifications for area-specific flood alerts, and a mobile-native build for offline-first emergency access.
 
-**POST body:**
-```json
-{
-  "type": "incident | need_help | can_help",
-  "category": "flood | power | travel | medical | supplies | other",
-  "description": "Water rising on Main Street",
-  "lat": 53.8008,
-  "lon": -1.5491
-}
-```
-
-**GET query params:** `lat`, `lon`, `radius` (metres), `sinceMinutes`, `type`, `category`
-
-### Shelters
-
-| Method | Endpoint | Description |
-|:---|:---|:---|
-| `GET` | `/api/shelters` | List all shelters with capacity data |
-
-### Safe Routing
-
-| Method | Endpoint | Description |
-|:---|:---|:---|
-| `POST` | `/api/routes/safe` | Get AI-analysed safe route to nearest shelter |
-
-**POST body:**
-```json
-{
-  "origin": { "lat": 53.8008, "lon": -1.5491 }
-}
-```
-
-**Response:**
-```json
-{
-  "routes": [{ "id": 1, "coordinates": [...], "dangerScore": 0.2 }],
-  "chosenRouteId": 1,
-  "explanation": "Route 1 avoids the flooded section on Kirkstall Road..."
-}
-```
-
----
-
-## 📁 Project Structure
-
-```
-Haven/
-├── client/                  # React frontend
-│   ├── src/
-│   │   ├── components/      # MapView, ReportModal, SafeRoutePanel, IncidentList
-│   │   ├── hooks/           # useIncidents, useUserLocation
-│   │   ├── api/             # incidentsApi, routesApi
-│   │   └── styles/          # main.css
-│   └── package.json
-│
-├── server/                  # Express backend
-│   ├── src/
-│   │   ├── models/          # Incident.js (Mongoose + 2dsphere)
-│   │   ├── routes/          # incidents.js, shelters.js, routesSafe.js
-│   │   ├── data/            # shelters.json, flood_zones.geojson
-│   │   └── server.js        # Entry point
-│   └── package.json
-│
-├── docs/                    # Architecture docs & notes
-└── README.md
-```
-
----
-
-## 👥 Team
-
-Built in **21 hours** at **LeedsHack 2026** by a team of 3:
-
-| Role | Focus Area |
-|:---|:---|
-| **Backend Developer** | Express API, MongoDB Atlas, database design & integration |
-| **Frontend Developer** | React UI, Leaflet map, user experience |
-| **AI / Routing Specialist** | Gemini integration, safe route analysis, flood data |
-
----
-
-## 🔮 What's Next
-
-- **Flood prediction** using historical data and ML models
-- **Authority dashboard** with user location heatmaps and AI situation summaries
-- **Multi-language support** via Gemini translation for diverse communities
-- **Push notifications** for real-time flood alerts in your area
-- **Mobile-native app** for offline-first emergency access
+<br>
 
 ---
 
 <div align="center">
 
-*Built with urgency at LeedsHack 2026 🏗️*
+<br>
 
-**Because when the water rises, every second counts.**
+**Built at LeedsHack 2026**
+
+Theme: *Systems Rebooted*
+
+*Because when the water rises, information should flow faster.*
+
+<br>
 
 </div>
-
