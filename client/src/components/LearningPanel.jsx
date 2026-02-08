@@ -3,7 +3,7 @@ import { learningResources } from "../data/learningResources";
 import "../styles/main.css";
 
 const LearningPanel = () => (
-  <div className="learning-panel">
+  <div className="learning-panel" style={{height:'100%',overflowY:'auto',padding:'16px 0 64px 0',background:'#fff'}}>
     <header className="learning-header">Important Info</header>
     <div className="learning-list">
       {learningResources.map(resource => (

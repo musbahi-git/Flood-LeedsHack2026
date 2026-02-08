@@ -53,7 +53,7 @@ function App() {
   // UI state
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [showIncidentList, setShowIncidentList] = useState(false);
-  const [activeView, setActiveView] = useState('map');
+  const [activeView, setActiveView] = useState('map'); // Default to map view
   const [darkMode, setDarkMode] = useState(false);
 
   // PWA install prompt state
