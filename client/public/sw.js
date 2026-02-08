@@ -9,7 +9,6 @@ const CACHE_NAME = 'haven-v1';
 self.addEventListener('install', (event) => {
   console.log('[SW] Installing service worker...');
   globalThis.skipWaiting();
-});
 
 // Activate event - claim clients immediately
 self.addEventListener('activate', (event) => {
