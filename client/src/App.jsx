@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import PropTypes from 'prop-types';
 
 // ErrorBoundary to catch runtime errors and display them
 class ErrorBoundary extends React.Component {
@@ -21,7 +22,7 @@ class ErrorBoundary extends React.Component {
 }
 
 ErrorBoundary.propTypes = {
-  children: require('prop-types').node
+  children: PropTypes.node
 };
 import LearningPanel from './components/LearningPanel';
 import { requestNotificationPermission, showNotification } from './utils/notifications';
