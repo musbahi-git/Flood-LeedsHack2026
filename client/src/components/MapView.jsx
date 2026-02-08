@@ -217,8 +217,8 @@ MapView.propTypes = {
       {/* Flood Zones Overlay */}
       {floodZones && (
         <GeoJSON data={floodZones} style={{
-          color: '#2563eb',
-          fillColor: '#2563eb',
+          color: '#ef4444', // red border
+          fillColor: '#ef4444', // red fill
           fillOpacity: 0.25,
           weight: 1,
         }} />

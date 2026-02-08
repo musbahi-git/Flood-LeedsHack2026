@@ -8,7 +8,11 @@ import L from 'leaflet';
 export function useFloodZones() {
   const [floodZones, setFloodZones] = useState(null);
   useEffect(() => {
-    fetch('/api/flood_zones')
+    const url =
+      window.location.hostname === 'haven-leeds-hack2026.vercel.app'
+        ? 'https://affectionate-flexibility-production.up.railway.app/api/flood_zones'
+        : '/api/flood_zones';
+    fetch(url)
       .then(res => res.json())
       .then(setFloodZones)
       .catch(() => setFloodZones(null));
@@ -19,7 +23,11 @@ export function useFloodZones() {
 export function useHistoricalFloodZones() {
   const [historicalFloodZones, setHistoricalFloodZones] = useState(null);
   useEffect(() => {
-    fetch('/api/historical_flood_zones')
+    const url =
+      window.location.hostname === 'haven-leeds-hack2026.vercel.app'
+        ? 'https://affectionate-flexibility-production.up.railway.app/api/historical_flood_zones'
+        : '/api/historical_flood_zones';
+    fetch(url)
       .then(res => res.json())
       .then(setHistoricalFloodZones)
       .catch(() => setHistoricalFloodZones(null));
