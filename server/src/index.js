@@ -59,10 +59,14 @@ const { Server } = require('socket.io');
 
 async function startServer() {
   try {
+    console.log('Starting FloodSafe server...');
     // Connect to MongoDB
+    console.log('Connecting to MongoDB...');
     await connectDB();
+    console.log('MongoDB connected.');
 
     // Create HTTP server and Socket.IO instance
+    console.log('Setting up HTTP server and Socket.IO...');
     const server = http.createServer(app);
     const io = new Server(server, {
       cors: {
@@ -89,6 +93,7 @@ async function startServer() {
     });
 
     // Start listening
+    console.log('Starting HTTP server...');
     server.listen(PORT, () => {
       console.log(`FloodSafe server running on port ${PORT}`);
     });
