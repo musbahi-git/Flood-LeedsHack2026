@@ -1,10 +1,9 @@
-const { FloodRiskService } = require('./FloodRiskService');
-const { ElevationService } = require('./ElevationService');
-// Add your actual routingApi, incidentService, shelterService implementations here
+const floodRiskService = require('./floodRiskService');
+const incidentService = require('./incidentService');
+const shelterService = require('./shelterService');
+
 module.exports = {
-  FloodRiskService,
-  ElevationService,
-  // routingApi,
-  // incidentService,
-  // shelterService,
+  floodRiskService,
+  incidentService,
+  shelterService,
 };

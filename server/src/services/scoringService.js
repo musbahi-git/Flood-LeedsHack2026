@@ -10,11 +10,11 @@ async function calculateEdgeCost(edgeData, env) {
   let penaltyMultiplier = 1.0;
 
   // 1. HARD BLOCK: Check for Severe Warnings or Verified Closures
-  const floodRisk = getFloodRisk(edgeData.coordinates); 
-  if (floodRisk.severity === 'severe') return Infinity;
+  const floodRisk = getFloodRisk(edgeData.lat, edgeData.lon);
+  if (floodRisk >= 0.8) return Infinity;
 
-  // 2. SOFT RISK: Add penalties for Flood Alerts (Severity 3)
-  if (floodRisk.severity === 'alert') penaltyMultiplier += 3.0;
+  // 2. SOFT RISK: Add penalties for Flood Alerts
+  if (floodRisk >= 0.4) penaltyMultiplier += 3.0;
 
   // 3. INFRASTRUCTURE & HISTORIC PENALTIES
   if (edgeData.isUnderpass) penaltyMultiplier += 2.0;

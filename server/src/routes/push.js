@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
 const webpush = require('web-push');
 
 // In-memory store for demo (replace with DB in production)

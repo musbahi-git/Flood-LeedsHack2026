@@ -49,7 +49,6 @@ regionTileSchema.statics.cacheFloodRisk = async function(regionId, polygon, floo
     { upsert: true, new: true }
   );
 };
-regionTileSchema.index({ polygon: '2dsphere' });
 
 const RegionTile = mongoose.model('RegionTile', regionTileSchema);
 
