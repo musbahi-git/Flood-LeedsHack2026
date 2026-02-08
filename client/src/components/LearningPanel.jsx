@@ -57,8 +57,7 @@ const LearningPanel = () => {
       </footer>
     </div>
   );
-}
-              ))}
+// ...existing code...
             </ul>
             {resource.externalLink && (
               <a
