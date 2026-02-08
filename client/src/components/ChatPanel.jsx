@@ -43,11 +43,11 @@ const ChatPanel = () => {
 
   return (
     <div className="chat-panel" style={{background:'#fff',padding:'16px',height:'100%',display:'flex',flexDirection:'column'}}>
-      <header className="chat-header" style={{fontWeight:'bold',fontSize:'1.2rem',marginBottom:'8px'}}>💬 Local Chat</header>
+      <header className="chat-header" style={{fontWeight:'bold',fontSize:'1.2rem',marginBottom:'8px'}}>Local Chat</header>
       <div className="chat-messages" style={{flex:1,overflowY:'auto',marginBottom:'8px',background:'#f3f4f6',borderRadius:'8px',padding:'8px'}}>
         {messages.map((msg, idx) => (
           <div key={idx} style={{marginBottom:'6px'}}>
-            <span style={{fontWeight:'bold',color:'#2563eb'}}>{msg.user}:</span> <span>{msg.text}</span>
+            <span style={{fontWeight:'bold',color:'#2563eb'}}>{msg.user}:</span> <span style={{color:'#222'}}>{msg.text}</span>
             <span style={{float:'right',fontSize:'0.8rem',color:'#64748b'}}>{msg.time}</span>
           </div>
         ))}
