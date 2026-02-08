@@ -17,10 +17,12 @@ class ErrorBoundary extends React.Component {
       return <div style={{color:'red',padding:'2rem'}}><h2>Something went wrong.</h2><pre>{this.state.error?.toString()}</pre></div>;
     }
     return this.props.children;
-  ErrorBoundary.propTypes = {
-    children: require('prop-types').node
-  };
   }
+}
+
+ErrorBoundary.propTypes = {
+  children: require('prop-types').node
+};
 }
 import LearningPanel from './components/LearningPanel';
 import { requestNotificationPermission, showNotification } from './utils/notifications';

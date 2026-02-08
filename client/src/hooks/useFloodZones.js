@@ -1,7 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle, GeoJSON, useMap, useMapEvents } from 'react-leaflet';
-import L from 'leaflet';
+import { useEffect, useState } from 'react';
 
 // ...existing icon and helper code...
 
