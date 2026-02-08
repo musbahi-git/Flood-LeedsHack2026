@@ -1,23 +1,16 @@
-Overall – Systems Rebooted: Reboots crisis info from top‑down announcements to bottom‑up, real‑time community signals.​​
+Frontend: React (18.2.0), Vite (build tool), React-Leaflet/Leaflet (interactive map), Axios (API calls), Socket.io-client (real-time updates), Prop-types (type checking), uuid (unique IDs), Jest (testing), Babel (transpilation), ESBuild (bundling), Service Worker (PWA), CSS (styling).
+Backend: Node.js, Express, custom services for flood risk, routing, elevation, and incident management. Data stored in GeoJSON files and models (MongoDB or similar).
+Deployment: Vercel (frontend), Railway (backend).
+Algorithms:
 
-PwC (Rewiring Communities):
+Safe Routing: Calculates safest path using flood risk, elevation, and incident data. Combines map graph traversal (A*) with real-time risk scoring.
+Flood Risk Scoring: Aggregates flood zone, historical data, and elevation to assess route safety.
+Incident Management: Real-time updates via WebSocket, stores and displays community-reported incidents.
+Map Rendering: Uses React-Leaflet for dynamic display of routes, incidents, shelters, and flood zones.
+Other Features:
 
-“New ways to connect people with shared needs, goals or experiences” – lets people see who nearby is affected by the same problem.​
-error during build:
-[vite:esbuild] Transform failed with 1 error:
-/vercel/path0/client/src/App.jsx:8:7: ERROR: Unexpected "React"
-file: /vercel/path0/client/src/App.jsx:8:7
-Unexpected "React"
-6  |      console.log('[App] Rendering view:', activeView);
-7  |    }, [activeView]);
-8  |  import React, { useState, useCallback, useEffect } from 'react';
-   |         ^
-9  |  import PropTypes from 'prop-types';
-10 |  
-    at failureErrorWithLog (/vercel/path0/client/node_modules/esbuild/lib/main.js:1472:15)
-    at /vercel/path0/client/node_modules/esbui
-
-“Reduce friction in accessing help, information or resources” – one place to see live issues instead of scattered chats.
-
-Parallax (Use the Past to Predict the Future): Incident history is the core dataset you correlate with weather/flood data to build future risk models.​​
-
+Learning Panel: Educational resources for flood safety.
+Report Modal: Allows users to report incidents directly on the map.
+PWA: Offline support and push notifications.
+Error Boundary: Robust error handling for UI stability.
+Describe: The app is a community safety platform combining real-time incident reporting, AI-guided safe routing, and educational resources, using modern web technologies and custom algorithms for risk-aware navigation.
