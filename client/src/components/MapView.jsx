@@ -192,18 +192,18 @@ function MapView({
         <GeoJSON data={floodZones} style={{
           color: '#ef4444', // red border
           fillColor: '#ef4444', // red fill
-          fillOpacity: 0.25,
-          weight: 1,
+          fillOpacity: 0.35,
+          weight: 2,
         }} />
       )}
-      {/* Historical Flood Zones Overlay */}
+      {/* Historical Flood Zones Overlay - lighter, textured */}
       {historicalFloodZones && (
         <GeoJSON data={historicalFloodZones} style={{
           color: '#f59e42',
           fillColor: '#f59e42',
-          fillOpacity: 0.18,
+          fillOpacity: 0.10,
           weight: 1,
-          dashArray: '6, 6',
+          dashArray: '8, 4',
         }} />
       )}
       {/* Base tile layer - Dark theme */}

@@ -187,15 +187,22 @@ function App() {
       )}
       {/* Header */}
       <header className="app-header">
-        <h1 className="app-title">Haven</h1>
-        <span className="app-tagline">Community Safety Map</span>
-        <div className="app-menu">
-          <button className="btn btn-small btn-ghost" onClick={() => setDarkMode(dm => !dm)}>
-            {darkMode ? '☀️ Light' : '🌙 Dark'}
-          </button>
-          <button className={"btn btn-small btn-primary" + (activeView === 'learn' ? ' active' : '')} onClick={() => setActiveView('learn')}>
-            📚 Learn
-          </button>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',width:'100%'}}>
+          <div>
+            <h1 className="app-title">Haven</h1>
+            <span className="app-tagline">Community Safety Map</span>
+          </div>
+          <div className="app-menu">
+            <button className="btn btn-small btn-ghost" onClick={() => setDarkMode(dm => !dm)}>
+              {darkMode ? '☀️ Light' : '🌙 Dark'}
+            </button>
+            <button className={"btn btn-small btn-primary" + (activeView === 'learn' ? ' active' : '')} onClick={() => setActiveView('learn')}>
+              📚 Learn
+            </button>
+            <button className={"btn btn-small btn-ghost" + (activeView === 'map' ? ' active' : '')} onClick={() => setActiveView('map')}>
+              🗺️ Map
+            </button>
+          </div>
         </div>
       </header>
 
