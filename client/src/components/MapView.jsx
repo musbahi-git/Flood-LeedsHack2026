@@ -152,6 +152,8 @@ function MapView({
   // Load flood zones and historical flood zones
   const floodZones = useFloodZones();
   const historicalFloodZones = useHistoricalFloodZones();
+  console.log('Flood Zones:', floodZones);
+  console.log('Historical Flood Zones:', historicalFloodZones);
 MapView.propTypes = {
   incidents: PropTypes.arrayOf(PropTypes.shape({
     _id: PropTypes.string,
